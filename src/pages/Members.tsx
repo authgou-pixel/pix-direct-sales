@@ -75,7 +75,7 @@ const Members = () => {
 
         const { data: lData, error: lError } = await supabase
           .from("lessons")
-          .select("id,product_id,title,description,order_index,module_id,content_type,content_url")
+          .select("*")
           .in("product_id", productIds)
           .order("order_index", { ascending: true });
         if (!lError) {

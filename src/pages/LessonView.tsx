@@ -26,10 +26,10 @@ const LessonView = () => {
       const { data: p } = await supabase.from("products").select("id,name,description").eq("id", productId).maybeSingle();
       setProduct(p || null);
 
-      const { data: l } = await supabase.from("lessons").select("id,module_id,title,description,content_type,content_url").eq("product_id", productId).order("order_index", { ascending: true });
+      const { data: l } = await supabase.from("lessons").select("*").eq("product_id", productId).order("order_index", { ascending: true });
       setLessons(l || []);
 
-      const { data: m } = await supabase.from("modules").select("id,product_id,title").eq("product_id", productId).order("order_index", { ascending: true });
+      const { data: m } = await supabase.from("modules").select("*").eq("product_id", productId).order("order_index", { ascending: true });
       setModules(m || []);
 
       const current = (l || []).find(x => x.id === lessonId) || null;
@@ -113,4 +113,3 @@ const LessonView = () => {
 };
 
 export default LessonView;
-
