@@ -119,6 +119,14 @@ const Dashboard = () => {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => navigate("/members")}
+              className="border-primary/20 hover:bg-primary/10"
+            >
+              Área de Membros
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => navigate("/dashboard/settings")}
               className="border-primary/20 hover:bg-primary/10"
             >
@@ -220,6 +228,14 @@ const Dashboard = () => {
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copiar Link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 border-primary/20 hover:bg-primary/10"
+                      onClick={() => navigate(`/dashboard/product/${product.id}`)}
+                    >
+                      Gerenciar
                     </Button>
                     <Button
                       variant="outline"

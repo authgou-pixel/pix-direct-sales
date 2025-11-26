@@ -92,6 +92,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status: status,
     });
 
+    let buyerUserId: string | null = null;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", buyerEmail)
+      .maybeSingle();
+    buyerUserId = profile?.id ?? null;
+
+    await supabase
+      .from("memberships")
+      .upsert({
+        product_id: product.id,
+        buyer_user_id: buyerUserId,
+        buyer_email: buyerEmail,
+        status,
+      });
+
     return res.status(200).json({
       payment_id: paymentId,
       status,

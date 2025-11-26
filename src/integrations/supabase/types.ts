@@ -168,6 +168,86 @@ export type Database = {
           },
         ]
       }
+      lessons: {
+        Row: {
+          id: string
+          product_id: string
+          title: string
+          description: string | null
+          order_index: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          title: string
+          description?: string | null
+          order_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          title?: string
+          description?: string | null
+          order_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memberships: {
+        Row: {
+          id: string
+          product_id: string
+          buyer_user_id: string | null
+          buyer_email: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          buyer_user_id?: string | null
+          buyer_email: string
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          buyer_user_id?: string | null
+          buyer_email?: string
+          status?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memberships_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "memberships_buyer_user_id_fkey"
+            columns: ["buyer_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
