@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -17,6 +17,15 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { toast } from "sonner";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
 interface Product {
   id: string;
@@ -38,6 +47,8 @@ const Dashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState<Stats>({ totalSales: 0, totalRevenue: 0, productsCount: 0 });
   const [loading, setLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">("monthly");
+  const [series, setSeries] = useState<{ date: string; value: number }[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,7 +92,7 @@ const Dashboard = () => {
       // Load sales stats
       const { data: salesData, error: salesError } = await supabase
         .from("sales")
-        .select("amount")
+        .select("amount,created_at")
         .eq("seller_id", userId)
         .eq("payment_status", "approved");
 
@@ -95,12 +106,57 @@ const Dashboard = () => {
         totalRevenue,
         productsCount: productsData?.length || 0,
       });
+
+      setSeries(aggregateSeries(salesData || [], timeframe));
     } catch (error: any) {
       toast.error("Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
   };
+
+  const aggregateSeries = (
+    raw: { amount: number; created_at: string }[],
+    tf: "daily" | "weekly" | "monthly"
+  ) => {
+    const byKey: Record<string, number> = {};
+    for (const item of raw) {
+      const d = new Date(item.created_at);
+      let key = "";
+      if (tf === "daily") {
+        key = d.toISOString().slice(0, 10); // YYYY-MM-DD
+      } else if (tf === "weekly") {
+        const tmp = new Date(d);
+        const day = tmp.getUTCDay();
+        const diff = tmp.getUTCDate() - day + (day === 0 ? -6 : 1); // Monday as start
+        const monday = new Date(tmp.setUTCDate(diff));
+        key = monday.toISOString().slice(0, 10);
+      } else {
+        key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+      }
+      byKey[key] = (byKey[key] || 0) + Number(item.amount);
+    }
+    return Object.keys(byKey)
+      .sort()
+      .map((k) => ({ date: k, value: byKey[k] }));
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    const refresh = async () => {
+      try {
+        const { data: salesData } = await supabase
+          .from("sales")
+          .select("amount,created_at")
+          .eq("seller_id", user.id)
+          .eq("payment_status", "approved");
+        setSeries(aggregateSeries(salesData || [], timeframe));
+      } catch (e) {}
+    };
+    refresh();
+    const id = setInterval(refresh, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, [user, timeframe]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -166,15 +222,15 @@ const Dashboard = () => {
         <div className="w-full bg-card/80 border-b border-border/50">
           <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground">R$ 0,00 / R$ 10,0K</div>
+              <div className="text-sm text-muted-foreground">R$ {stats.totalRevenue.toFixed(2)} / R$ 10,00K</div>
               <div className="w-40 h-2 bg-muted rounded">
-                <div className="h-2 bg-primary rounded" style={{ width: "0%" }} />
+                <div
+                  className="h-2 bg-primary rounded"
+                  style={{ width: `${Math.min((stats.totalRevenue / 10000) * 100, 100)}%` }}
+                />
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="size-8 rounded-full bg-muted" />
-              <div className="size-8 rounded-full bg-muted" />
-            </div>
+            <div />
           </div>
         </div>
         <main className="mx-auto max-w-6xl px-6 py-6">
@@ -224,11 +280,30 @@ const Dashboard = () => {
         </div>
 
         <Card className="mb-8">
-          <CardHeader>
+          <CardHeader className="flex justify-between items-center">
             <CardTitle className="text-sm">Estatísticas de Vendas</CardTitle>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setTimeframe("daily")}>Diária</Button>
+              <Button variant="outline" size="sm" onClick={() => setTimeframe("weekly")}>Semanal</Button>
+              <Button variant="outline" size="sm" onClick={() => setTimeframe("monthly")}>Mensal</Button>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="h-64 w-full bg-muted rounded" />
+          <CardContent className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={series} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revGradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.7} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                <Tooltip />
+                <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="url(#revGradient)" />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
