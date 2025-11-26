@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { randomUUID } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -44,11 +45,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const accessToken = mpConfig.access_token;
 
+    const idempotencyKey = randomUUID();
+
     const mpResp = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        "X-Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify({
         transaction_amount: Number(product.price),
@@ -58,6 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           email: buyerEmail,
           first_name: buyerName,
         },
+        external_reference: `${product.id}-${buyerEmail}`,
       }),
     });
 
