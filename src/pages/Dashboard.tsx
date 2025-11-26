@@ -133,7 +133,7 @@ const Dashboard = () => {
                 loading="lazy"
                 decoding="async"
                 fetchPriority="low"
-                className="h-auto w-[60%] max-w-36 object-contain"
+                className="h-auto w-[72%] max-w-[10.8rem] object-contain"
               />
             </a>
           </SidebarHeader>
