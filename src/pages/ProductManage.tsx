@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
@@ -305,17 +304,12 @@ const ProductManage = () => {
           <CardContent className="space-y-4">
             <div>
               <Label>Módulo</Label>
-              <Select value={currentModuleId ?? ""} onValueChange={(v) => setCurrentModuleId(v || null)}>
-                <SelectTrigger className="w-full border-primary/20 bg-card">
-                  <SelectValue placeholder="Sem módulo" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-primary/20">
-                  <SelectItem value="">Sem módulo</SelectItem>
-                  {modules.map((m) => (
-                    <SelectItem key={m.id} value={m.id}>{m.title}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select className="w-full border rounded p-2" value={currentModuleId ?? ""} onChange={(e) => setCurrentModuleId(e.target.value || null)}>
+                <option value="">Sem módulo</option>
+                {modules.map(m => (
+                  <option key={m.id} value={m.id}>{m.title}</option>
+                ))}
+              </select>
             </div>
             <div>
               <Label>Título</Label>
@@ -328,16 +322,11 @@ const ProductManage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Tipo de Conteúdo</Label>
-                <Select value={newLessonContentType} onValueChange={(v) => setNewLessonContentType(v)}>
-                  <SelectTrigger className="w-full border-primary/20 bg-card">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-primary/20">
-                    <SelectItem value="video">Vídeo</SelectItem>
-                    <SelectItem value="pdf">PDF</SelectItem>
-                    <SelectItem value="link">Link</SelectItem>
-                  </SelectContent>
-                </Select>
+                <select className="w-full border rounded p-2" value={newLessonContentType} onChange={(e) => setNewLessonContentType(e.target.value)}>
+                  <option value="video">Vídeo</option>
+                  <option value="pdf">PDF</option>
+                  <option value="link">Link</option>
+                </select>
               </div>
               <div>
                 <Label>URL do Conteúdo</Label>
