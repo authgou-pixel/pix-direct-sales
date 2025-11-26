@@ -49,7 +49,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "";
     const baseUrl = process.env.WEBHOOK_BASE_URL || vercelUrl || "";
-    const notificationUrl = baseUrl ? `${baseUrl}/api/mp-webhook` : undefined;
+    let notificationUrl: string | undefined = undefined;
+    try {
+      if (baseUrl) {
+        const u = new URL(baseUrl);
+        const full = `${u.origin}/api/mp-webhook`;
+        // validate
+        new URL(full);
+        notificationUrl = full;
+      }
+    } catch {
+      notificationUrl = undefined;
+    }
 
     const mpResp = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
@@ -58,17 +69,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "Content-Type": "application/json",
         "X-Idempotency-Key": idempotencyKey,
       },
-      body: JSON.stringify({
-        transaction_amount: Number(product.price),
-        description: product.name,
-        payment_method_id: "pix",
-        payer: {
-          email: buyerEmail,
-          first_name: buyerName,
-        },
-        external_reference: `${product.id}-${buyerEmail}`,
-        notification_url: notificationUrl,
-      }),
+      body: JSON.stringify((() => {
+        const payload: any = {
+          transaction_amount: Number(product.price),
+          description: product.name,
+          payment_method_id: "pix",
+          payer: {
+            email: buyerEmail,
+            first_name: buyerName,
+          },
+          external_reference: `${product.id}-${buyerEmail}`,
+        };
+        if (notificationUrl) payload.notification_url = notificationUrl;
+        return payload;
+      })()),
     });
 
     if (!mpResp.ok) {
