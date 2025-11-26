@@ -108,8 +108,14 @@ All colors MUST be HSL.
   }
 
   [data-sidebar="menu-button"] span:last-child {
-    font-size: 14px;
-    line-height: 1.25rem;
+    font-size: 18px;
+    line-height: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  [data-sidebar="menu-button"] {
+    justify-content: center;
   }
 
   [data-sidebar="menu-button"],
@@ -118,5 +124,9 @@ All colors MUST be HSL.
   [data-sidebar="header"],
   [data-sidebar="separator"] {
     border: none !important;
+  }
+
+  [data-sidebar="header"] {
+    margin-bottom: 15px !important;
   }
 }
