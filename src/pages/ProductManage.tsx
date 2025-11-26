@@ -129,22 +129,28 @@ const ProductManage = () => {
       return;
     }
     const nextOrder = (lessons.filter(l => l.module_id === currentModuleId).slice(-1)[0]?.order_index ?? 0) + 1;
-    const basePayload: any = {
+    type LessonInsertPayload = {
+      product_id: string;
+      title: string;
+      description: string | null;
+      order_index: number;
+      content_type: string;
+      content_url: string | null;
+      module_id?: string;
+    };
+    const basePayload: LessonInsertPayload = {
       product_id: productId as string,
       title: newLessonTitle,
       description: newLessonDescription || null,
       order_index: nextOrder,
       content_type: newLessonContentType,
       content_url: newLessonContentUrl || null,
+      ...(currentModuleId ? { module_id: currentModuleId } : {}),
     };
-    if (currentModuleId) {
-      basePayload.module_id = currentModuleId;
-    }
 
     let { error } = await supabase.from("lessons").insert(basePayload);
     if (error && String(error.message).toLowerCase().includes("module_id")) {
-      const fallbackPayload = { ...basePayload };
-      delete (fallbackPayload as any).module_id;
+      const { module_id, ...fallbackPayload } = basePayload;
       const retry = await supabase.from("lessons").insert(fallbackPayload);
       error = retry.error;
     }

@@ -19,6 +19,7 @@ const NewProduct = () => {
     price: "",
     content_type: "pdf",
     content_url: "",
+    image_url: "",
   });
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const NewProduct = () => {
         return;
       }
 
-      const { error } = await supabase.from("products").insert({
+      let { error } = await supabase.from("products").insert({
         user_id: session.user.id,
         name: formData.name,
         description: formData.description,
@@ -51,14 +52,34 @@ const NewProduct = () => {
         content_type: formData.content_type,
         content_url: formData.content_url,
         is_active: true,
+        // opcional: imagem do produto, requer coluna image_url no schema
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore enquanto coluna não existir em types
+        image_url: formData.image_url || undefined,
       });
+
+      if (error && String(error.message).toLowerCase().includes("image_url")) {
+        error = undefined;
+        const retry = await supabase.from("products").insert({
+          user_id: session.user.id,
+          name: formData.name,
+          description: formData.description,
+          price: parseFloat(formData.price),
+          content_type: formData.content_type,
+          content_url: formData.content_url,
+          is_active: true,
+        });
+        if (retry.error) throw retry.error;
+        toast.info("Imagem não salva — adicione a coluna image_url no Supabase");
+      }
 
       if (error) throw error;
 
       toast.success("Produto criado com sucesso!");
       navigate("/dashboard");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao criar produto");
+    } catch (err) {
+      const message = (err as { message?: string }).message;
+      toast.error(message || "Erro ao criar produto");
     } finally {
       setLoading(false);
     }
@@ -168,6 +189,19 @@ const NewProduct = () => {
                     ? "Cole o link completo do vídeo do YouTube"
                     : "Cole o link onde o arquivo está hospedado"}
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image_url">Imagem do Produto (246×246)</Label>
+                <Input
+                  id="image_url"
+                  type="url"
+                  placeholder="https://.../imagem-246x246.png"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="border-primary/20"
+                />
+                <p className="text-sm text-muted-foreground">Medida recomendada: 246×246. Use uma URL pública.</p>
               </div>
 
               <Button 

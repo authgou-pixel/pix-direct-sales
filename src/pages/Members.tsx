@@ -17,6 +17,7 @@ type Product = {
   description: string | null;
   content_type: string;
   content_url: string;
+  image_url?: string | null;
 };
 
 type Lesson = {
@@ -63,7 +64,7 @@ const Members = () => {
       if (productIds.length > 0) {
         const { data: pData, error: pError } = await supabase
           .from("products")
-          .select("id,name,description,content_type,content_url")
+          .select("*")
           .in("id", productIds);
         if (pError) {
           toast.error("Erro ao carregar produtos");
@@ -112,65 +113,61 @@ const Members = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {memberships.map((m) => {
               const p = products[m.product_id];
-              const ls = lessons[m.product_id] || [];
+              const ls = (lessons[m.product_id] || []).sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+              const firstLessonId = ls[0]?.id;
+              const handleOpen = () => {
+                if (m.status !== 'approved') return;
+                if (firstLessonId) {
+                  navigate(`/members/product/${m.product_id}/lesson/${firstLessonId}`);
+                } else {
+                  toast.info('Nenhuma aula cadastrada');
+                }
+              };
               return (
-                <Card key={m.id} className="border-primary/20">
-                  <CardHeader>
-                    <CardTitle>{p?.name || m.product_id}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="mb-2 text-sm">
-                      Status: <span className={`px-2 py-1 rounded text-xs ${m.status === 'approved' ? 'bg-success/10 text-success border border-success/20' : 'bg-muted text-muted-foreground'}`}>{m.status}</span>
+                <Card key={m.id} className={`border-primary/20 hover:border-primary/40 transition cursor-pointer relative ${m.status !== 'approved' ? 'opacity-60' : ''}`} onClick={handleOpen}>
+                  <CardContent className="p-0">
+                    <div className="p-4">
+                      <div className="w-[246px] h-[246px] bg-muted rounded overflow-hidden mx-auto">
+                        {/* imagem do produto, se houver */}
+                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                        {/* @ts-ignore opcional enquanto schema não tem image_url */}
+                        {p?.image_url ? (
+                          <img src={p.image_url} alt={p?.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-muted-foreground">246×246</div>
+                        )}
+                      </div>
+                      <div className="mt-3 font-semibold text-center">{p?.name || m.product_id}</div>
+                      {p?.description && <div className="text-xs text-muted-foreground text-center line-clamp-2">{p.description}</div>}
+                      <div className="mt-2 text-center">
+                        <span className={`px-2 py-1 rounded text-xs ${m.status === 'approved' ? 'bg-success/10 text-success border border-success/20' : 'bg-muted text-muted-foreground'}`}>{m.status === 'approved' ? 'Acesso liberado' : 'Aguardando aprovação'}</span>
+                      </div>
                     </div>
-                    {p?.description && <p className="text-muted-foreground mb-4">{p.description}</p>}
-                    <div className="space-y-2">
-                    {ls.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">Sem aulas cadastradas.</p>
-                      ) : (
-                        ls.map(l => (
-                          <div key={l.id} className="border rounded p-3">
-                            <div className="font-medium">{l.title}</div>
-                            {l.description && <div className="text-sm text-muted-foreground whitespace-pre-wrap">{l.description}</div>}
-                            {m.status === 'approved' && l.content_url && (
-                              <Button className="mt-2" variant="outline" onClick={() => navigate(`/members/product/${m.product_id}/lesson/${l.id}`)}>Assistir</Button>
-                            )}
-                          </div>
-                        ))
-                      )}
-                    </div>
-                    {p?.content_type && p?.content_url && (
-                      m.status === 'approved' ? (
-                        <Button className="mt-4" asChild>
-                          <a href={p.content_url} target="_blank" rel="noreferrer">Abrir Conteúdo ({p.content_type.toUpperCase()})</a>
-                        </Button>
-                      ) : (
-                        <div className="mt-4 flex gap-2">
-                          <Button variant="outline" disabled>
-                            Aguardando aprovação do pagamento
-                          </Button>
-                          <Button variant="outline" onClick={async () => {
-                            try {
-                              const resp = await fetch('/api/refresh-membership', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ productId: m.product_id, buyerEmail }),
-                              });
-                              const data = await resp.json();
-                              if (resp.ok && data?.status) {
-                                setMemberships(prev => prev.map(x => x.product_id === m.product_id ? { ...x, status: data.status } : x));
-                                if (data.status === 'approved') toast.success('Pagamento aprovado'); else toast.info(`Status: ${data.status}`);
-                              } else {
-                                toast.error(data?.error || 'Erro ao atualizar status');
-                              }
-                            } catch {
-                              toast.error('Erro ao atualizar status');
+                    {m.status !== 'approved' && (
+                      <div className="absolute inset-0 flex items-end justify-center p-3 pointer-events-none">
+                        <Button variant="outline" className="pointer-events-auto" onClick={async (e) => {
+                          e.stopPropagation();
+                          try {
+                            const resp = await fetch('/api/refresh-membership', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ productId: m.product_id, buyerEmail }),
+                            });
+                            const data = await resp.json();
+                            if (resp.ok && data?.status) {
+                              setMemberships(prev => prev.map(x => x.product_id === m.product_id ? { ...x, status: data.status } : x));
+                              if (data.status === 'approved') toast.success('Pagamento aprovado'); else toast.info(`Status: ${data.status}`);
+                            } else {
+                              toast.error(data?.error || 'Erro ao atualizar status');
                             }
-                          }}>Atualizar status</Button>
-                        </div>
-                      )
+                          } catch {
+                            toast.error('Erro ao atualizar status');
+                          }
+                        }}>Atualizar status</Button>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
