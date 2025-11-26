@@ -63,7 +63,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!mpResp.ok) {
       const errText = await mpResp.text();
-      return res.status(mpResp.status).json({ error: "Mercado Pago API error", details: errText });
+      let details: any = errText;
+      try {
+        details = JSON.parse(errText);
+      } catch {}
+      return res.status(mpResp.status).json({ error: "Mercado Pago API error", details });
     }
 
     const mpData = await mpResp.json();

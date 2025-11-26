@@ -68,7 +68,10 @@ const PaymentPage = () => {
 
       const isJson = resp.headers.get("content-type")?.includes("application/json");
       const data = isJson ? await resp.json() : { error: await resp.text() };
-      if (!resp.ok) throw new Error(data?.error || "Erro ao gerar pagamento");
+      if (!resp.ok) {
+        const details = typeof data?.details === "string" ? data.details : JSON.stringify(data?.details ?? {});
+        throw new Error(`${data?.error || "Erro ao gerar pagamento"}${details ? `: ${details}` : ""}`);
+      }
 
       setQrCode(data.qr_code || "");
       setQrCodeBase64(data.qr_code_base64 || "");
