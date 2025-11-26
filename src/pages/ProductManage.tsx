@@ -141,7 +141,7 @@ const ProductManage = () => {
         content_url: newLessonContentUrl || null,
       });
     if (error) {
-      toast.error("Erro ao adicionar aula");
+      toast.error(error.message || "Erro ao adicionar aula");
       return;
     }
     setNewLessonTitle("");
