@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fetch from "node-fetch";
 import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -8,7 +7,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { productId, buyerEmail, buyerName } = req.body || {};
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    const { productId, buyerEmail, buyerName } = body;
     if (!productId || !buyerEmail || !buyerName) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -90,7 +90,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       qr_code_base64: qrCodeBase64,
     });
   } catch (e: any) {
-    return res.status(500).json({ error: e?.message || "Unexpected error" });
+    try {
+      const message = typeof e?.message === "string" ? e.message : "Unexpected error";
+      return res.status(500).json({ error: message });
+    } catch {
+      return res.status(500).json({ error: "Unexpected error" });
+    }
   }
 }
-
