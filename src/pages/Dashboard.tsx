@@ -4,18 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut, Package, DollarSign, Settings, Copy, ExternalLink, Users, HelpCircle } from "lucide-react";
+import { Plus, LogOut, Package, DollarSign, Settings, Copy, ExternalLink, HelpCircle, CreditCard } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  SidebarProvider,
-  Sidebar,
-  SidebarInset,
-  SidebarContent,
-  SidebarGroup,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarHeader,
-} from "@/components/ui/sidebar";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
 import {
@@ -198,62 +194,45 @@ const Dashboard = () => {
   }
 
   return (
-    <SidebarProvider>
-      <Sidebar side="left" variant="floating">
-        <SidebarContent>
-          <SidebarHeader>
-            <a href="/" className="flex w-full items-center justify-start pl-3 md:pl-4">
-              <img
-                src="https://i.imgur.com/TYyds7y.png"
-                alt="Logo"
-                loading="lazy"
-                decoding="async"
-                fetchPriority="low"
-                className="h-auto w-[88%] max-w-[13rem] object-contain"
+    <div className="min-h-screen bg-background">
+      <div className="w-full bg-card/80 border-b border-border/50">
+        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="text-sm text-muted-foreground">R$ {periodStats.revenue.toFixed(2)} / R$ 10,00K</div>
+            <div className="w-40 h-2 bg-muted rounded">
+              <div
+                className="h-2 rounded"
+                style={{ width: `${Math.min((periodStats.revenue / 10000) * 100, 100)}%`, backgroundColor: "#800080" }}
               />
-            </a>
-          </SidebarHeader>
-          <SidebarGroup>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => navigate("/dashboard/settings")} size="lg">
-                  <Settings className="h-5 w-5" />
-                  <span>Configurações</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => navigate("/members")} size="lg">
-                  <Users className="h-5 w-5" />
-                  <span>Área de Membros</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout} size="lg">
-                  <LogOut className="h-5 w-5" />
-                  <span>Sair</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-
-      <SidebarInset className="bg-background">
-        <div className="w-full bg-card/80 border-b border-border/50">
-          <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-muted-foreground">R$ {periodStats.revenue.toFixed(2)} / R$ 10,00K</div>
-              <div className="w-40 h-2 bg-muted rounded">
-                <div
-                  className="h-2 rounded"
-                  style={{ width: `${Math.min((periodStats.revenue / 10000) * 100, 100)}%`, backgroundColor: "#800080" }}
-                />
-              </div>
             </div>
-            <div />
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/settings")} className="gap-2">
+              <CreditCard className="h-4 w-4" />
+              Pagamentos
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center justify-center">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="" />
+                    <AvatarFallback>{user?.email?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[180px]">
+                <div className="px-3 py-2 text-xs text-muted-foreground">{user?.email}</div>
+                <DropdownMenuItem onClick={() => navigate("/profile")}>Perfil</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
-        <main className="mx-auto max-w-6xl px-6 py-6">
+      </div>
+      <main className="mx-auto max-w-6xl px-6 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-card border rounded-xl">
             <CardHeader className="pb-2">
@@ -337,9 +316,8 @@ const Dashboard = () => {
             <div className="h-24 flex items-center justify-center text-muted-foreground">Sem dados</div>
           </CardContent>
         </Card>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+      </main>
+    </div>
   );
 };
 
