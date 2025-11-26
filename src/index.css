@@ -102,20 +102,21 @@ All colors MUST be HSL.
 
 @layer components {
   [data-variant="floating"] [data-sidebar="sidebar"] {
-    border: none !important;
+    border-right: 1px solid #CCCCCC !important;
     box-shadow: none !important;
     outline: none !important;
   }
 
   [data-sidebar="menu-button"] span:last-child {
     font-size: 18px;
-    line-height: 1.5rem;
+    line-height: 1.45rem;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
+    transform: translateY(-1px);
   }
 
   [data-sidebar="menu-button"] {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   [data-sidebar="menu-button"],
@@ -127,6 +128,6 @@ All colors MUST be HSL.
   }
 
   [data-sidebar="header"] {
-    margin-bottom: 15px !important;
+    margin-bottom: 10px !important;
   }
 }

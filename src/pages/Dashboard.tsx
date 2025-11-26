@@ -137,7 +137,6 @@ const Dashboard = () => {
               />
             </a>
           </SidebarHeader>
-          <div className="h-px w-full bg-[#CCCCCC] my-5" />
           <SidebarGroup>
             <SidebarMenu>
               <SidebarMenuItem>
