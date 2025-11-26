@@ -134,9 +134,15 @@ const Members = () => {
                       )}
                     </div>
                     {p?.content_type && p?.content_url && (
-                      <Button className="mt-4" asChild>
-                        <a href={p.content_url} target="_blank" rel="noreferrer">Abrir Conteúdo ({p.content_type.toUpperCase()})</a>
-                      </Button>
+                      m.status === 'approved' ? (
+                        <Button className="mt-4" asChild>
+                          <a href={p.content_url} target="_blank" rel="noreferrer">Abrir Conteúdo ({p.content_type.toUpperCase()})</a>
+                        </Button>
+                      ) : (
+                        <Button className="mt-4" variant="outline" disabled>
+                          Aguardando aprovação do pagamento
+                        </Button>
+                      )
                     )}
                   </CardContent>
                 </Card>
@@ -150,4 +156,3 @@ const Members = () => {
 };
 
 export default Members;
-
