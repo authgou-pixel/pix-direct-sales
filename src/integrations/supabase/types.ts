@@ -172,6 +172,60 @@ export type Database = {
         Row: {
           id: string
           product_id: string
+          module_id: string | null
+          title: string
+          description: string | null
+          order_index: number
+          content_type: string | null
+          content_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          module_id?: string | null
+          title: string
+          description?: string | null
+          order_index?: number
+          content_type?: string | null
+          content_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          module_id?: string | null
+          title?: string
+          description?: string | null
+          order_index?: number
+          content_type?: string | null
+          content_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      modules: {
+        Row: {
+          id: string
+          product_id: string
           title: string
           description: string | null
           order_index: number
@@ -198,7 +252,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "lessons_product_id_fkey"
+            foreignKeyName: "modules_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"

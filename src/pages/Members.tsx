@@ -25,6 +25,9 @@ type Lesson = {
   title: string;
   description: string | null;
   order_index: number;
+  module_id: string | null;
+  content_type: string | null;
+  content_url: string | null;
 };
 
 const Members = () => {
@@ -72,7 +75,7 @@ const Members = () => {
 
         const { data: lData, error: lError } = await supabase
           .from("lessons")
-          .select("id,product_id,title,description,order_index")
+          .select("id,product_id,title,description,order_index,module_id,content_type,content_url")
           .in("product_id", productIds)
           .order("order_index", { ascending: true });
         if (!lError) {
@@ -124,13 +127,16 @@ const Members = () => {
                     </div>
                     {p?.description && <p className="text-muted-foreground mb-4">{p.description}</p>}
                     <div className="space-y-2">
-                      {ls.length === 0 ? (
+                    {ls.length === 0 ? (
                         <p className="text-sm text-muted-foreground">Sem aulas cadastradas.</p>
                       ) : (
                         ls.map(l => (
                           <div key={l.id} className="border rounded p-3">
                             <div className="font-medium">{l.title}</div>
                             {l.description && <div className="text-sm text-muted-foreground whitespace-pre-wrap">{l.description}</div>}
+                            {m.status === 'approved' && l.content_url && (
+                              <Button className="mt-2" variant="outline" onClick={() => navigate(`/members/product/${m.product_id}/lesson/${l.id}`)}>Assistir</Button>
+                            )}
                           </div>
                         ))
                       )}

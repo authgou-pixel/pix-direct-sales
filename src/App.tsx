@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import PaymentPage from "./pages/PaymentPage";
 import ProductManage from "./pages/ProductManage";
 import Members from "./pages/Members";
+import LessonView from "./pages/LessonView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/dashboard/product/:productId" element={<ProductManage />} />
           <Route path="/members" element={<Members />} />
+          <Route path="/members/product/:productId/lesson/:lessonId" element={<LessonView />} />
           <Route path="/pay/:productId" element={<PaymentPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
