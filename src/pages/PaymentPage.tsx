@@ -26,6 +26,8 @@ const PaymentPage = () => {
   const [copied, setCopied] = useState(false);
   const [qrCode, setQrCode] = useState<string>("");
   const [qrCodeBase64, setQrCodeBase64] = useState<string>("");
+  const [paymentId, setPaymentId] = useState<string>("");
+  const [status, setStatus] = useState<string>("pending");
 
   useEffect(() => {
     loadProduct();
@@ -75,12 +77,32 @@ const PaymentPage = () => {
 
       setQrCode(data.qr_code || "");
       setQrCodeBase64(data.qr_code_base64 || "");
+      setPaymentId(data.payment_id || "");
+      setStatus(data.status || "pending");
       setShowPayment(true);
       toast.success("Pagamento gerado! Escaneie o QR Code ou copie o código PIX");
     } catch (error: any) {
       toast.error(error.message || "Erro ao gerar pagamento");
     }
   };
+
+  useEffect(() => {
+    if (!paymentId) return;
+    const interval = setInterval(async () => {
+      try {
+        const resp = await fetch(`/api/check-payment-status?paymentId=${paymentId}`);
+        const data = await resp.json();
+        if (resp.ok && data?.status) {
+          setStatus(data.status);
+          if (data.status === "approved") {
+            toast.success("Compra aprovada!");
+            clearInterval(interval);
+          }
+        }
+      } catch {}
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [paymentId]);
 
   const copyPixCode = () => {
     navigator.clipboard.writeText(qrCode);
@@ -214,6 +236,15 @@ const PaymentPage = () => {
                 <p>• Escaneie o QR Code ou cole o código</p>
                 <p>• Confirme o pagamento</p>
               </div>
+
+              {status === "approved" && (
+                <div className="border rounded-lg p-4 bg-success/10 border-success/20">
+                  <p className="font-medium text-success">Compra aprovada</p>
+                  <Button className="mt-3 w-full" asChild>
+                    <a href={`/auth?signup=1&prefillEmail=${encodeURIComponent(buyerEmail)}`}>Criar conta e acessar</a>
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </>
         )}

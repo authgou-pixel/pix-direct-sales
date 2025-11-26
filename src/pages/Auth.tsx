@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,14 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const signup = params.get("signup");
+    const prefillEmail = params.get("prefillEmail");
+    if (signup === "1") setIsLogin(false);
+    if (prefillEmail) setEmail(prefillEmail);
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -24,7 +30,7 @@ const Auth = () => {
       }
     };
     checkUser();
-  }, [navigate]);
+  }, [navigate, location.search]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
