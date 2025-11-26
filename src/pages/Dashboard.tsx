@@ -150,12 +150,6 @@ const Dashboard = () => {
       </Sidebar>
 
       <SidebarInset className="bg-background">
-        <header className="border-b bg-card/50 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">Minha Plataforma</h1>
-          </div>
-        </header>
-
         <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="border-primary/20 bg-gradient-card shadow-purple">
