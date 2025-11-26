@@ -14,6 +14,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 
@@ -124,6 +125,18 @@ const Dashboard = () => {
     <SidebarProvider>
       <Sidebar side="left" variant="floating">
         <SidebarContent>
+          <SidebarHeader>
+            <a href="/" className="flex w-full items-center justify-center">
+              <img
+                src="https://i.imgur.com/TYyds7y.png"
+                alt="Logo"
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className="h-auto w-[60%] max-w-36 object-contain"
+              />
+            </a>
+          </SidebarHeader>
           <SidebarGroup>
             <SidebarMenu>
               <SidebarMenuItem>
