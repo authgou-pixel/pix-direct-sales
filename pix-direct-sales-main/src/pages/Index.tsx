@@ -9,15 +9,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-[#1A1A1A] text-white">
       <header className="w-full sticky top-0 z-40 border-b border-[#8A2BE2]/30 bg-[#1A1A1A]/90 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-0 md:py-1 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <img src="https://i.imgur.com/JaOLGxd.png" alt="Logo" className="h-32 md:h-48 w-auto object-contain -mb-8 md:-mb-12" loading="eager" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }} />
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Button size="sm" variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10" onClick={() => navigate("/auth")}> 
-              <User className="h-3 w-3 mr-1" /> Entrar
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3" />
+          <div className="flex items-center gap-3">
+            <Button variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10" onClick={() => navigate("/auth")}> 
+              <User className="h-4 w-4 mr-2" /> Entrar
             </Button>
-            <Button size="sm" className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90" onClick={() => navigate("/auth?signup=1")}> 
+            <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90" onClick={() => navigate("/auth?signup=1")}> 
               Criar conta
             </Button>
           </div>
@@ -31,9 +29,8 @@ const Index = () => {
           <div className="mx-auto max-w-6xl px-4 text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-white to-[#C6A3FF] bg-clip-text text-transparent">Hospede e venda seus produtos digitais sem taxas</h1>
             <p className="text-lg md:text-xl text-[#CFCFCF] mb-10 max-w-3xl mx-auto">Hospedagem gratuita, vendas diretas e integração bancária instantânea. Esqueça o checkout tradicional.</p>
-            <div className="flex gap-4 justify-center">
-              <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90" onClick={() => navigate("/auth?signup=1")}>Criar conta</Button>
-              <Button variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10" onClick={() => navigate("/auth")}>Entrar</Button>
+            <div className="mt-10 flex justify-center">
+              <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full max-w-4xl h-auto rounded-xl border border-[#8A2BE2]/30 shadow-lg" loading="lazy" referrerPolicy="no-referrer" />
             </div>
           </div>
         </section>
