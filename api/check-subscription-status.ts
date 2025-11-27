@@ -51,11 +51,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const status = data?.status || sub.status || "pending";
+    const ref: string = typeof data?.external_reference === "string" ? data.external_reference : "";
+    const isTrial = ref.includes("trial");
 
     if (status === "approved") {
       const now = new Date();
       const exp = new Date(now);
-      exp.setDate(exp.getDate() + 30);
+      if (isTrial) {
+        exp.setMinutes(exp.getMinutes() + 5);
+      } else {
+        exp.setDate(exp.getDate() + 30);
+      }
       await supabase
         .from("subscriptions")
         .update({ status: "active", activated_at: now.toISOString(), expires_at: exp.toISOString() })

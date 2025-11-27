@@ -19,6 +19,7 @@ const Subscription = () => {
   const [qrCodeBase64, setQrCodeBase64] = useState<string>("");
   const [paymentId, setPaymentId] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"monthly" | "trial">("monthly");
 
   useEffect(() => {
     const init = async () => {
@@ -58,7 +59,7 @@ const Subscription = () => {
       const resp = await fetch("/api/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, buyerEmail, buyerName }),
+        body: JSON.stringify({ userId, buyerEmail, buyerName, planType: selectedPlan === "trial" ? "trial" : undefined }),
       });
       const data = await resp.json();
       if (!resp.ok) {
@@ -106,6 +107,18 @@ const Subscription = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  useEffect(() => {
+    if (!expiresAt) return;
+    const end = new Date(expiresAt).getTime();
+    const now = Date.now();
+    const msUntilAlert = end - now - 60_000;
+    if (msUntilAlert <= 0) return;
+    const t = setTimeout(() => {
+      toast.info("Seu plano expira em 1 minuto");
+    }, msUntilAlert);
+    return () => clearTimeout(t);
+  }, [expiresAt]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -129,13 +142,13 @@ const Subscription = () => {
                   <Rocket className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="uppercase">Plano Mensal</CardTitle>
-                  <CardDescription>Duração: 30 dias</CardDescription>
+                  <CardTitle className="uppercase">{selectedPlan === "trial" ? "Plano de teste - 5 minutos" : "Plano Mensal"}</CardTitle>
+                  <CardDescription>{selectedPlan === "trial" ? "Duração: 5 minutos" : "Duração: 30 dias"}</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-5xl font-extrabold bg-gradient-hero bg-clip-text text-transparent">R$ 37,90 <span className="text-base align-top text-foreground">/ mês</span></div>
+              <div className="text-5xl font-extrabold bg-gradient-hero bg-clip-text text-transparent">{selectedPlan === "trial" ? "R$ 2,00" : "R$ 37,90"} {selectedPlan === "trial" ? "" : <span className="text-base align-top text-foreground">/ mês</span>}</div>
               <div className="text-sm text-muted-foreground">Sua assinatura está ativa.</div>
               <div className="text-sm">Expira em: {expiresAt ? new Date(expiresAt).toLocaleString() : "-"}</div>
               <div className="mt-4">
@@ -151,15 +164,15 @@ const Subscription = () => {
                   <Rocket className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="uppercase">Plano Mensal</CardTitle>
-                  <CardDescription>Duração: 30 dias</CardDescription>
+                  <CardTitle className="uppercase">{selectedPlan === "trial" ? "Plano de teste - 5 minutos" : "Plano Mensal"}</CardTitle>
+                  <CardDescription>{selectedPlan === "trial" ? "Duração: 5 minutos" : "Duração: 30 dias"}</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {!qrCode && (
                 <>
-                  <div className="text-5xl font-extrabold bg-gradient-hero bg-clip-text text-transparent">R$ 37,90 <span className="text-base align-top text-foreground">/ mês</span></div>
+                  <div className="text-5xl font-extrabold bg-gradient-hero bg-clip-text text-transparent">{selectedPlan === "trial" ? "R$ 2,00" : "R$ 37,90"} {selectedPlan === "trial" ? "" : <span className="text-base align-top text-foreground">/ mês</span>}</div>
                   <ul className="space-y-2 text-sm text-foreground">
                     <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Sem taxas por venda — você recebe 100%.</li>
                     <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> QR Code PIX instantâneo para seus clientes.</li>
@@ -167,7 +180,10 @@ const Subscription = () => {
                     <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Dashboard com vendas e área de membros.</li>
                     <li className="flex items-center gap-2"><Check className="h-4 w-4 text-success" /> Integração Mercado Pago para vendas de produtos.</li>
                   </ul>
-                  <Button className="w-full bg-gradient-hero hover:opacity-90" onClick={handleCreate}>Escolher Plano Mensal</Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <Button className="w-full bg-gradient-hero hover:opacity-90" onClick={() => { setSelectedPlan("monthly"); handleCreate(); }}>Escolher Plano Mensal</Button>
+                    <Button variant="outline" className="w-full" onClick={() => { setSelectedPlan("trial"); handleCreate(); }}>Plano de teste - 5 minutos</Button>
+                  </div>
                 </>
               )}
               {qrCode && (
@@ -205,7 +221,7 @@ const Subscription = () => {
 
                   <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
                     <p className="text-sm font-medium mb-1">Valor a pagar</p>
-                    <p className="text-2xl font-bold text-primary">R$ 37,90</p>
+                    <p className="text-2xl font-bold text-primary">{selectedPlan === "trial" ? "R$ 2,00" : "R$ 37,90"}</p>
                   </div>
 
                   <div className="text-sm text-muted-foreground space-y-1">
@@ -218,6 +234,7 @@ const Subscription = () => {
                   <div className="flex gap-2">
                     <Button variant="outline" onClick={handleRefresh}>Atualizar status</Button>
                     <Button onClick={() => setQrCode("")}>Nova tentativa</Button>
+                    <Button variant="outline" onClick={() => setSelectedPlan(selectedPlan === "trial" ? "monthly" : "trial")}>{selectedPlan === "trial" ? "Ver plano mensal" : "Ver plano de teste"}</Button>
                   </div>
                 </>
               )}

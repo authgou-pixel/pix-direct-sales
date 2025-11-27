@@ -9,7 +9,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const { userId, buyerEmail, buyerName } = body;
+    const { userId, buyerEmail, buyerName, planType } = body;
     if (!userId || !buyerEmail || !buyerName) {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       notificationUrl = undefined;
     }
 
-    const amount = 37.9;
+    const amount = planType === "trial" ? 2 : 37.9;
 
     const mpResp = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
@@ -55,13 +55,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       body: JSON.stringify((() => {
         const payload: Record<string, unknown> = {
           transaction_amount: Number(amount),
-          description: "Assinatura Mensal",
+          description: planType === "trial" ? "Plano de teste - 5 minutos" : "Assinatura Mensal",
           payment_method_id: "pix",
           payer: {
             email: buyerEmail,
             first_name: buyerName,
           },
-          external_reference: `subscription-${userId}`,
+          external_reference: planType === "trial" ? `subscription-${userId}-trial` : `subscription-${userId}`,
         };
         if (notificationUrl) payload.notification_url = notificationUrl;
         return payload;
