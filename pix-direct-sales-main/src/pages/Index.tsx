@@ -46,14 +46,14 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="bg-[#232323] border-[#8A2BE2]/20 hover:border-[#8A2BE2]/40 transition transform hover:-translate-y-1 hover:shadow-2xl">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><Palette className="h-6 w-6 text-[#8A2BE2]" /></div>
-                  <CardTitle>Checkout customizável</CardTitle>
-                  <CardDescription>Estilos, cores e elementos ajustáveis para sua oferta.</CardDescription>
+                  <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><ArrowRightLeft className="h-6 w-6 text-[#8A2BE2]" /></div>
+                  <CardTitle>Integração bancária direta</CardTitle>
+                  <CardDescription>Venda sem checkout tradicional. Pagamento vai direto para sua conta.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mt-2 space-y-2 text-sm text-[#AFAFAF]">
-                    <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[#8A2BE2]" /> Temas e branding completos</div>
-                    <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[#8A2BE2]" /> Experiência fluida e segura</div>
+                    <div className="flex items-center gap-2"><Banknote className="h-4 w-4 text-[#8A2BE2]" /> Depósito imediato via PIX</div>
+                    <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[#8A2BE2]" /> Sem intermediários e sem fila de repasse</div>
                   </div>
                 </CardContent>
               </Card>
@@ -61,13 +61,13 @@ const Index = () => {
               <Card className="bg-[#232323] border-[#8A2BE2]/20 hover:border-[#8A2BE2]/40 transition transform hover:-translate-y-1 hover:shadow-2xl">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><CheckCircle className="h-6 w-6 text-[#8A2BE2]" /></div>
-                  <CardTitle>Aprovação instantânea</CardTitle>
-                  <CardDescription>Produtos liberados sem fricção e sem bloqueios.</CardDescription>
+                  <CardTitle>Recebimento direto na conta</CardTitle>
+                  <CardDescription>Sem taxas da plataforma e sem retenção de saldo.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mt-2 space-y-2 text-sm text-[#AFAFAF]">
-                    <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[#8A2BE2]" /> Publicação imediata</div>
-                    <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[#8A2BE2]" /> Monitoramento automático</div>
+                    <div className="flex items-center gap-2"><Banknote className="h-4 w-4 text-[#8A2BE2]" /> D+0 com PIX, sem espera</div>
+                    <div className="flex items-center gap-2"><RefreshCcw className="h-4 w-4 text-[#8A2BE2]" /> Operação simples e sem repasses</div>
                   </div>
                 </CardContent>
               </Card>
@@ -82,20 +82,21 @@ const Index = () => {
                   <div className="mt-2 space-y-2 text-sm text-[#AFAFAF]">
                     <div className="flex items-center gap-2"><Library className="h-4 w-4 text-[#8A2BE2]" /> Biblioteca organizada</div>
                     <div className="flex items-center gap-2"><Download className="h-4 w-4 text-[#8A2BE2]" /> Downloads controlados</div>
+                    <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[#8A2BE2]" /> Acesso imediato após pagamento</div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card className="bg-[#232323] border-[#8A2BE2]/20 hover:border-[#8A2BE2]/40 transition transform hover:-translate-y-1 hover:shadow-2xl">
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><Users className="h-6 w-6 text-[#8A2BE2]" /></div>
-                  <CardTitle>Afiliação e coprodução</CardTitle>
-                  <CardDescription>Parcerias e marketplace para escalar vendas.</CardDescription>
+                  <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><QrCode className="h-6 w-6 text-[#8A2BE2]" /></div>
+                  <CardTitle>Venda sem checkout</CardTitle>
+                  <CardDescription>Link direto e QR PIX automático para seus clientes.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mt-2 space-y-2 text-sm text-[#AFAFAF]">
-                    <div className="flex items-center gap-2"><Users className="h-4 w-4 text-[#8A2BE2]" /> Redes de afiliados</div>
-                    <div className="flex items-center gap-2"><RefreshCcw className="h-4 w-4 text-[#8A2BE2]" /> Split de receita</div>
+                    <div className="flex items-center gap-2"><QrCode className="h-4 w-4 text-[#8A2BE2]" /> Geração instantânea de pagamento</div>
+                    <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-[#8A2BE2]" /> Fluxo simples e conversão alta</div>
                   </div>
                 </CardContent>
               </Card>
@@ -103,13 +104,13 @@ const Index = () => {
               <Card className="bg-[#232323] border-[#8A2BE2]/20 hover:border-[#8A2BE2]/40 transition transform hover:-translate-y-1 hover:shadow-2xl">
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-[#8A2BE2]/20 flex items-center justify-center mb-3"><Ban className="h-6 w-6 text-[#8A2BE2]" /></div>
-                  <CardTitle>Sem bloqueios</CardTitle>
-                  <CardDescription>Operação transparente e segura para qualquer produto.</CardDescription>
+                  <CardTitle>Sem bloqueios e sem retenção</CardTitle>
+                  <CardDescription>Integração direta com banco: dinheiro não fica parado na plataforma.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mt-2 space-y-2 text-sm text-[#AFAFAF]">
-                    <div className="flex items-center gap-2"><Banknote className="h-4 w-4 text-[#8A2BE2]" /> PIX direto D+0</div>
-                    <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[#8A2BE2]" /> Saldo sem retenção</div>
+                    <div className="flex items-center gap-2"><Banknote className="h-4 w-4 text-[#8A2BE2]" /> PIX direto D+0, sem espera</div>
+                    <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-[#8A2BE2]" /> Sem tranca de saldo ou reservas</div>
                   </div>
                 </CardContent>
               </Card>
