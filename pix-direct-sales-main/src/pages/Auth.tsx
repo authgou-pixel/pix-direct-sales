@@ -47,7 +47,7 @@ const Auth = () => {
         toast.success("Login realizado com sucesso!");
         navigate("/dashboard");
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -57,11 +57,25 @@ const Auth = () => {
         });
         
         if (error) throw error;
-        toast.success("Conta criada! Você já pode fazer login.");
-        setIsLogin(true);
+        if (data.session) {
+          toast.success("Cadastro concluído! Entrando...");
+          navigate("/dashboard");
+        } else {
+          toast.info("Verifique seu e-mail para confirmar o cadastro. Após confirmar, você será direcionado ao dashboard.");
+          // tentativa de login automático caso confirmação por e-mail esteja desativada
+          try {
+            const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password });
+            if (!loginErr) {
+              navigate("/dashboard");
+              return;
+            }
+          } catch { void 0 }
+          setIsLogin(true);
+        }
       }
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao processar requisição");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao processar requisição";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

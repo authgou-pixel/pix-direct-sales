@@ -367,6 +367,12 @@ const Dashboard = () => {
         <Button variant="outline" className="justify-start gap-2" onClick={() => navigate("/dashboard/settings")}>
           <CreditCard className="h-4 w-4" /> Pagamentos
         </Button>
+        <Button
+          className="justify-start gap-2 bg-gradient-to-r from-primary to-purple-700 text-white"
+          onClick={() => navigate("/dashboard/subscription")}
+        >
+          Upgrade
+        </Button>
         <Button variant="outline" className="justify-start gap-2 mt-auto" onClick={() => navigate("/dashboard/settings")}> 
           <SettingsIcon className="h-4 w-4" /> Configurações
         </Button>

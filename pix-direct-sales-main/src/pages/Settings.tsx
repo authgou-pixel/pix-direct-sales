@@ -11,6 +11,7 @@ import { ArrowLeft, Loader2, Key } from "lucide-react";
 const Settings = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const [accessToken, setAccessToken] = useState("");
   const [hasConfig, setHasConfig] = useState(false);
 
@@ -31,8 +32,8 @@ const Settings = () => {
         await supabase.from("subscriptions").update({ status: "expired" }).eq("user_id", session.user.id);
       }
       if (!sub || sub.status !== "active" || expired) {
-        toast.error("Seu plano venceu. Renove para continuar.");
-        navigate("/dashboard/subscription");
+        setBlocked(true);
+        toast.info("Funcionalidade premium: configure pagamentos após assinar.");
         return;
       }
       await loadConfig(session.user.id);
@@ -80,8 +81,8 @@ const Settings = () => {
         await supabase.from("subscriptions").update({ status: "expired" }).eq("user_id", session.user.id);
       }
       if (!sub || sub.status !== "active" || expired) {
+        setBlocked(true);
         toast.error("Plano inativo. Renove sua assinatura.");
-        navigate("/dashboard/subscription");
         return;
       }
 
@@ -127,6 +128,20 @@ const Settings = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
+        {blocked && (
+          <Card className="border-destructive/20 mb-6">
+            <CardHeader>
+              <CardTitle>Recurso Premium</CardTitle>
+              <CardDescription>Esta funcionalidade requer uma assinatura ativa.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">Assine para inserir seu Access Token do Mercado Pago e receber pagamentos.</p>
+              <div className="flex gap-2">
+                <Button className="bg-primary" onClick={() => navigate('/dashboard/subscription')}>Ir para Upgrade</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
         <Card className="border-primary/20 shadow-purple">
           <CardHeader>
             <div className="flex items-center gap-2">
