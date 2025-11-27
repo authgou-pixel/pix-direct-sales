@@ -122,21 +122,18 @@ const Index = () => {
 
         <section className="py-16">
           <div className="mx-auto max-w-6xl px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">Área de Membros</h2>
-                <div className="space-y-3 text-[#CFCFCF]">
-                  <div className="flex items-center gap-2"><Library className="h-5 w-5 text-[#8A2BE2]" /> Acesso a produtos adquiridos</div>
-                  <div className="flex items-center gap-2"><QrCode className="h-5 w-5 text-[#8A2BE2]" /> Biblioteca de conteúdos digitais</div>
-                  <div className="flex items-center gap-2"><Download className="h-5 w-5 text-[#8A2BE2]" /> Gerenciamento de downloads</div>
+                <h2 className="text-4xl md:text-5xl font-bold mb-8">Área de Membros</h2>
+                <div className="space-y-4 text-[#CFCFCF] text-lg md:text-xl">
+                  <div className="flex items-center gap-3"><Library className="h-6 w-6 text-[#8A2BE2]" /> Acesso a produtos adquiridos</div>
+                  <div className="flex items-center gap-3"><QrCode className="h-6 w-6 text-[#8A2BE2]" /> Biblioteca de conteúdos digitais</div>
+                  <div className="flex items-center gap-3"><Download className="h-6 w-6 text-[#8A2BE2]" /> Gerenciamento de downloads</div>
                 </div>
-                <div className="mt-6 flex gap-3">
-                  <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90" onClick={() => navigate("/auth?signup=1")}>Criar conta</Button>
-                  <Button variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10" onClick={() => navigate("/auth")}>Entrar</Button>
-                </div>
+                
               </div>
               <div>
-                <img src="https://i.imgur.com/a6O13Qu.png" alt="Área de Membros" className="rounded-xl shadow-lg border border-[#8A2BE2]/30" />
+                <img src="https://i.imgur.com/xgt5BoY.png" alt="Área de Membros" className="w-full max-w-2xl md:max-w-3xl rounded-2xl shadow-2xl border border-[#8A2BE2]/40" loading="lazy" referrerPolicy="no-referrer" />
               </div>
             </div>
           </div>
