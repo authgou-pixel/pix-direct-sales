@@ -9,13 +9,13 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-[#1A1A1A] text-white">
       <header className="w-full sticky top-0 z-40 border-b border-[#8A2BE2]/30 bg-[#1A1A1A]/90 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-1 md:py-2 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="mx-auto max-w-6xl px-4 py-0 md:py-1 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
             <img src="https://i.imgur.com/JaOLGxd.png" alt="Logo" className="h-32 md:h-48 w-auto object-contain -mb-8 md:-mb-12" loading="eager" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }} />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Button size="sm" variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10" onClick={() => navigate("/auth")}> 
-              <User className="h-3 w-3 mr-2" /> Entrar
+              <User className="h-3 w-3 mr-1" /> Entrar
             </Button>
             <Button size="sm" className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90" onClick={() => navigate("/auth?signup=1")}> 
               Criar conta
