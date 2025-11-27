@@ -13,7 +13,6 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 const NewProduct = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [blocked, setBlocked] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -30,17 +29,7 @@ const NewProduct = () => {
         navigate("/auth");
         return;
       }
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("status,expires_at")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-      const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
-      if (!sub || sub.status !== "active" || expired) {
-        setBlocked(true);
-        toast.info("Funcionalidade premium: criação de produtos requer assinatura.");
-        return;
-      }
+      // sem bloqueio inicial — validação ocorre ao enviar
     };
     checkAuth();
   }, [navigate]);
@@ -54,6 +43,17 @@ const NewProduct = () => {
       if (!session) {
         toast.error("Você precisa estar logado");
         navigate("/auth");
+        return;
+      }
+
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,expires_at")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
+      if (!sub || sub.status !== "active" || expired) {
+        toast.info("Criação de produtos requer assinatura. Vá em Upgrade para assinar.");
         return;
       }
 
@@ -115,17 +115,6 @@ const NewProduct = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
-        {blocked && (
-          <Card className="border-destructive/20 shadow-purple mb-6">
-            <CardHeader>
-              <CardTitle>Recurso Premium</CardTitle>
-              <CardDescription>Criação de produtos é exclusiva para assinantes.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="bg-primary" onClick={() => navigate('/dashboard/subscription')}>Ir para Upgrade</Button>
-            </CardContent>
-          </Card>
-        )}
         <Card className="border-primary/20 shadow-purple">
           <CardHeader>
             <CardTitle>Informações do Produto</CardTitle>
