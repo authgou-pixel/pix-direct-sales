@@ -1,15 +1,8 @@
 {
-  "builds": [
-    {
-      "src": "pix-direct-sales-main/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "npm run build",
-        "distDir": "pix-direct-sales-main/dist"
-      }
-    }
-  ],
+  "version": 2,
+  "buildCommand": "npm ci --prefix pix-direct-sales-main && npm run build --prefix pix-direct-sales-main",
+  "outputDirectory": "pix-direct-sales-main/dist",
   "rewrites": [
-    { "source": "/((?!api|.*\\.[^/]+$).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
