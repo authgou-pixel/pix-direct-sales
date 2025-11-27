@@ -60,13 +60,6 @@ const Dashboard = () => {
         navigate("/auth");
         return;
       }
-      const sub = await getCurrentSubscription();
-      await markExpiredIfNeeded(sub);
-      if (!isSubscriptionActive(sub)) {
-        toast.error("Seu plano venceu. Renove para continuar.");
-        navigate("/dashboard/subscription");
-        return;
-      }
       setUser(session.user);
       await loadDashboardData(session.user.id);
     };

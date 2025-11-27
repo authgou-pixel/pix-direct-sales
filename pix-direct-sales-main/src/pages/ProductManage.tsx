@@ -49,19 +49,12 @@ const ProductManage = () => {
   const [currentModuleId, setCurrentModuleId] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const init = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           setLoading(false);
           navigate("/auth");
-          return;
-        }
-        const sub = await getCurrentSubscription();
-        await markExpiredIfNeeded(sub);
-        if (!isSubscriptionActive(sub)) {
-          toast.error("Plano expirado. Renove para gerenciar produtos.");
-          navigate("/dashboard/subscription");
           return;
         }
         await Promise.all([loadProduct(), loadModules(), loadLessons()]);
@@ -71,8 +64,23 @@ const ProductManage = () => {
         setLoading(false);
       }
     };
-    checkAuth();
+    init();
   }, [navigate, productId]);
+
+  const requireActiveSubscription = async (): Promise<boolean> => {
+    try {
+      const sub = await getCurrentSubscription();
+      await markExpiredIfNeeded(sub);
+      if (!isSubscriptionActive(sub)) {
+        toast.info("Funcionalidade premium: assine para continuar.");
+        return false;
+      }
+      return true;
+    } catch {
+      toast.error("Erro ao validar assinatura");
+      return false;
+    }
+  };
 
   const loadProduct = async () => {
     const { data, error } = await supabase
@@ -95,6 +103,7 @@ const ProductManage = () => {
   };
 
   const saveProduct = async () => {
+    if (!(await requireActiveSubscription())) return;
     const payload: Record<string, unknown> = {
       name: productName,
       description: productDescription || null,
@@ -152,6 +161,7 @@ const ProductManage = () => {
   };
 
   const addModule = async () => {
+    if (!(await requireActiveSubscription())) return;
     if (!newModuleTitle.trim()) {
       toast.error("Informe o título do módulo");
       return;
@@ -176,6 +186,7 @@ const ProductManage = () => {
   };
 
   const addLesson = async () => {
+    if (!(await requireActiveSubscription())) return;
     if (!newLessonTitle.trim()) {
       toast.error("Informe o título da aula");
       return;
@@ -218,6 +229,7 @@ const ProductManage = () => {
   };
 
   const removeLesson = async (id: string) => {
+    if (!(await requireActiveSubscription())) return;
     const { error } = await supabase.from("lessons").delete().eq("id", id);
     if (error) {
       toast.error("Erro ao remover aula");
@@ -228,6 +240,7 @@ const ProductManage = () => {
   };
 
   const removeModule = async (id: string) => {
+    if (!(await requireActiveSubscription())) return;
     const { error } = await supabase.from("modules").delete().eq("id", id);
     if (error) {
       toast.error("Erro ao remover módulo");

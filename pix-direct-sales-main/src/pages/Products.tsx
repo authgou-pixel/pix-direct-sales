@@ -29,13 +29,6 @@ const Products = () => {
         navigate("/auth");
         return;
       }
-      const sub = await getCurrentSubscription();
-      await markExpiredIfNeeded(sub);
-      if (!isSubscriptionActive(sub)) {
-        toast.error("Plano expirado. Renove para gerenciar produtos.");
-        navigate("/dashboard/subscription");
-        return;
-      }
       const userId = session.user.id;
       const { data, error } = await supabase
         .from("products")
