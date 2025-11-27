@@ -8,7 +8,7 @@ import { DollarSign, Package, HelpCircle, LogOut, CreditCard, Settings as Settin
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { filterByTimeframe, Timeframe, aggregateSeries } from "@/utils/dashboard";
 import { getCurrentSubscription, isSubscriptionActive, markExpiredIfNeeded } from "@/utils/subscription";
 
@@ -294,19 +294,26 @@ const Dashboard = () => {
               <div className="h-full w-full animate-pulse rounded bg-muted" />
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={series} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="revGradient" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.7} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))" }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))" }} />
+                <PieChart>
                   <Tooltip />
-                  <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="url(#revGradient)" />
-                </AreaChart>
+                  <Legend />
+                  <Pie
+                    data={series.map((s) => ({ name: s.date, value: s.value }))}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                  >
+                    {series.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={["#FF6B6B","#FFD93D","#6BCB77","#4D96FF","#B76CFD","#00F5D4","#F15BB5","#845EC2","#FF9671","#FFC75F"][index % 10]}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
               </ResponsiveContainer>
             )}
           </CardContent>
