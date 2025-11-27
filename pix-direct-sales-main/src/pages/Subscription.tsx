@@ -20,7 +20,7 @@ const Subscription = () => {
   const [paymentId, setPaymentId] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"monthly" | "trial">("monthly");
-  const enableTrial = String(import.meta.env.VITE_ENABLE_TRIAL || "").toLowerCase() === "true";
+  const enableTrial = String(import.meta.env.VITE_ENABLE_TRIAL ?? "true").toLowerCase() !== "false";
 
   useEffect(() => {
     const init = async () => {
