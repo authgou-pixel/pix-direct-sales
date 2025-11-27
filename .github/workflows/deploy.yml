@@ -30,13 +30,11 @@ jobs:
           BASE_PATH: "/${{ github.event.repository.name }}"
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-        run: npm run build
+        run: npm run build && cp ./dist/index.html ./dist/404.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./pix-direct-sales-main/dist
-      - name: Add SPA 404 fallback
-        run: cp ./pix-direct-sales-main/dist/index.html ./pix-direct-sales-main/dist/404.html
 
   deploy:
     runs-on: ubuntu-latest
