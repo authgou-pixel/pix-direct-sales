@@ -29,13 +29,21 @@ const Index = () => {
 
       <main>
         <section className="relative overflow-hidden py-24">
-          <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-[#8A2BE2]/20 blur-[100px]"></div>
-          <div className="absolute -bottom-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#5E2DBE]/20 blur-[100px]"></div>
-          <div className="mx-auto max-w-6xl px-4 text-center">
+          <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-[#8A2BE2]/20 blur-[100px] z-0"></div>
+          <div className="absolute -bottom-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#5E2DBE]/20 blur-[100px] z-0"></div>
+          <div className="absolute inset-0 glass-hero z-10"></div>
+          <div className="mx-auto max-w-6xl px-4 text-center relative z-20">
+            <img
+              src="https://i.imgur.com/ycRB6A5.png"
+              alt="Logo"
+              className="mx-auto mb-6 h-16 md:h-24 w-auto object-contain select-none"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            />
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-white to-[#C6A3FF] bg-clip-text text-transparent">Plataforma completa para venda de produtos digitais</h1>
             <p className="text-lg md:text-xl text-[#CFCFCF] mb-10 max-w-3xl mx-auto">Alta conversão e operação sem bloqueios. Aprovação automática, saque rápido e integração direta.</p>
-            <div className="mt-10 flex justify-center">
-              <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full max-w-4xl h-auto rounded-xl border border-[#8A2BE2]/30 shadow-lg" loading="lazy" referrerPolicy="no-referrer" />
+            <div className="mt-10 flex justify-center relative z-20">
+              <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full max-w-4xl h-auto rounded-xl" loading="lazy" referrerPolicy="no-referrer" />
             </div>
           </div>
         </section>
@@ -120,20 +128,21 @@ const Index = () => {
           </div>
         </section>
 
-        <section className="py-16">
+
+        <section className="py-20 checkerboard-dark rounded-2xl">
           <div className="mx-auto max-w-6xl px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
               <div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-8">Área de Membros</h2>
-                <div className="space-y-4 text-[#CFCFCF] text-lg md:text-xl">
-                  <div className="flex items-center gap-3"><Library className="h-6 w-6 text-[#8A2BE2]" /> Acesso a produtos adquiridos</div>
-                  <div className="flex items-center gap-3"><QrCode className="h-6 w-6 text-[#8A2BE2]" /> Biblioteca de conteúdos digitais</div>
-                  <div className="flex items-center gap-3"><Download className="h-6 w-6 text-[#8A2BE2]" /> Gerenciamento de downloads</div>
+                <h2 className="text-5xl md:text-6xl font-bold mb-10">Área de Membros</h2>
+                <div className="space-y-5 text-[#CFCFCF] text-xl md:text-2xl">
+                  <div className="flex items-center gap-4"><Library className="h-8 w-8 text-[#8A2BE2]" /> Acesso a produtos adquiridos</div>
+                  <div className="flex items-center gap-4"><QrCode className="h-8 w-8 text-[#8A2BE2]" /> Biblioteca de conteúdos digitais</div>
+                  <div className="flex items-center gap-4"><Download className="h-8 w-8 text-[#8A2BE2]" /> Gerenciamento de downloads</div>
                 </div>
                 
               </div>
               <div>
-                <img src="https://i.imgur.com/xgt5BoY.png" alt="Área de Membros" className="w-full max-w-2xl md:max-w-3xl rounded-2xl shadow-2xl border border-[#8A2BE2]/40" loading="lazy" referrerPolicy="no-referrer" />
+                <img src="https://i.imgur.com/xgt5BoY.png" alt="Área de Membros" className="w-full max-w-3xl md:max-w-4xl rounded-2xl shadow-2xl" loading="lazy" referrerPolicy="no-referrer" />
               </div>
             </div>
           </div>
