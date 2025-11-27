@@ -27,6 +27,18 @@ const NewProduct = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
+        return;
+      }
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,expires_at")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
+      if (!sub || sub.status !== "active" || expired) {
+        toast.error("Plano expirado. Renove para criar produtos.");
+        navigate("/dashboard/subscription");
+        return;
       }
     };
     checkAuth();

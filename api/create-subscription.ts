@@ -9,8 +9,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const { productId, buyerEmail, buyerName } = body;
-    if (!productId || !buyerEmail || !buyerName) {
+    const { userId, buyerEmail, buyerName } = body;
+    if (!userId || !buyerEmail || !buyerName) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -20,41 +20,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: "Supabase server env not configured" });
     }
 
+    const MP_PLATFORM_ACCESS_TOKEN = process.env.MP_PLATFORM_ACCESS_TOKEN as string;
+    if (!MP_PLATFORM_ACCESS_TOKEN) {
+      return res.status(500).json({ error: "Mercado Pago platform token not configured" });
+    }
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    const { data: product, error: productError } = await supabase
-      .from("products")
-      .select("id,name,price,user_id")
-      .eq("id", productId)
-      .eq("is_active", true)
-      .single();
-
-    if (productError || !product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    const { data: sub } = await supabase
-      .from("subscriptions")
-      .select("status,expires_at")
-      .eq("user_id", product.user_id)
-      .maybeSingle();
-
-    const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
-    if (!sub || sub.status !== "active" || expired) {
-      return res.status(403).json({ error: "Seller subscription expired" });
-    }
-
-    const { data: mpConfig, error: mpError } = await supabase
-      .from("mercado_pago_config")
-      .select("access_token")
-      .eq("user_id", product.user_id)
-      .single();
-
-    if (mpError || !mpConfig) {
-      return res.status(400).json({ error: "Mercado Pago not configured for seller" });
-    }
-
-    const accessToken = mpConfig.access_token;
 
     const idempotencyKey = randomUUID();
 
@@ -65,7 +36,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (baseUrl) {
         const u = new URL(baseUrl);
         const full = `${u.origin}/api/mp-webhook`;
-        // validate
         new URL(full);
         notificationUrl = full;
       }
@@ -73,23 +43,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       notificationUrl = undefined;
     }
 
+    const amount = 37.9;
+
     const mpResp = await fetch("https://api.mercadopago.com/v1/payments", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        Authorization: `Bearer ${MP_PLATFORM_ACCESS_TOKEN}`,
         "Content-Type": "application/json",
         "X-Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify((() => {
         const payload: Record<string, unknown> = {
-          transaction_amount: Number(product.price),
-          description: product.name,
+          transaction_amount: Number(amount),
+          description: "Assinatura Mensal",
           payment_method_id: "pix",
           payer: {
             email: buyerEmail,
             first_name: buyerName,
           },
-          external_reference: `${product.id}-${buyerEmail}`,
+          external_reference: `subscription-${userId}`,
         };
         if (notificationUrl) payload.notification_url = notificationUrl;
         return payload;
@@ -99,9 +71,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!mpResp.ok) {
       const errText = await mpResp.text();
       let details: unknown = errText;
-      try {
-        details = JSON.parse(errText);
-      } catch { /* ignore */ }
+      try { details = JSON.parse(errText); } catch { /* ignore */ }
       return res.status(mpResp.status).json({ error: "Mercado Pago API error", details });
     }
 
@@ -112,32 +82,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const qrCode = mpData?.point_of_interaction?.transaction_data?.qr_code ?? null;
     const qrCodeBase64 = mpData?.point_of_interaction?.transaction_data?.qr_code_base64 ?? null;
 
-    await supabase.from("sales").insert({
-      product_id: product.id,
-      seller_id: product.user_id,
-      buyer_email: buyerEmail,
-      buyer_name: buyerName,
-      amount: Number(product.price),
-      payment_id: paymentId,
-      payment_status: status,
-    });
-
-    let buyerUserId: string | null = null;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("email", buyerEmail)
-      .maybeSingle();
-    buyerUserId = profile?.id ?? null;
-
     await supabase
-      .from("memberships")
+      .from("subscriptions")
       .upsert({
-        product_id: product.id,
-        buyer_user_id: buyerUserId,
-        buyer_email: buyerEmail,
+        user_id: userId,
         status,
-      });
+        last_payment_id: paymentId,
+        activated_at: null,
+        expires_at: null,
+      }, { onConflict: "user_id" });
 
     return res.status(200).json({
       payment_id: paymentId,

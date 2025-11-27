@@ -59,8 +59,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("buyer_email", buyerEmail);
 
     return res.status(200).json({ status });
-  } catch (e: any) {
-    return res.status(500).json({ error: e?.message || "Unexpected error" });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Unexpected error";
+    return res.status(500).json({ error: message });
   }
 }
 

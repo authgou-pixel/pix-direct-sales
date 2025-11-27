@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { getCurrentSubscription, isSubscriptionActive, markExpiredIfNeeded } from "@/utils/subscription";
 
 type Module = {
   id: string;
@@ -54,6 +55,13 @@ const ProductManage = () => {
         if (!session) {
           setLoading(false);
           navigate("/auth");
+          return;
+        }
+        const sub = await getCurrentSubscription();
+        await markExpiredIfNeeded(sub);
+        if (!isSubscriptionActive(sub)) {
+          toast.error("Plano expirado. Renove para gerenciar produtos.");
+          navigate("/dashboard/subscription");
           return;
         }
         await Promise.all([loadProduct(), loadModules(), loadLessons()]);
@@ -103,7 +111,8 @@ const ProductManage = () => {
       .update(payload)
       .eq("id", productId as string);
     if (error && String(error.message).toLowerCase().includes("image_url")) {
-      const { image_url, ...rest } = payload as any;
+      const rest: Record<string, unknown> = { ...payload };
+      delete (rest as Record<string, unknown> & { image_url?: unknown }).image_url;
       const retry = await supabase.from("products").update(rest).eq("id", productId as string);
       error = retry.error;
       if (!error) toast.info("Imagem não salva — adicione a coluna image_url no Supabase");

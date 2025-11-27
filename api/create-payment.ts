@@ -33,6 +33,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: "Product not found" });
     }
 
+    const { data: sub } = await supabase
+      .from("subscriptions")
+      .select("status,expires_at")
+      .eq("user_id", product.user_id)
+      .maybeSingle();
+
+    const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
+    if (!sub || sub.status !== "active" || expired) {
+      return res.status(403).json({ error: "Seller subscription expired" });
+    }
+
     const { data: mpConfig, error: mpError } = await supabase
       .from("mercado_pago_config")
       .select("access_token")
@@ -70,7 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         "X-Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify((() => {
-        const payload: any = {
+        const payload: Record<string, unknown> = {
           transaction_amount: Number(product.price),
           description: product.name,
           payment_method_id: "pix",
@@ -87,10 +98,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     if (!mpResp.ok) {
       const errText = await mpResp.text();
-      let details: any = errText;
+      let details: unknown = errText;
       try {
         details = JSON.parse(errText);
-      } catch {}
+      } catch { /* ignore */ }
       return res.status(mpResp.status).json({ error: "Mercado Pago API error", details });
     }
 

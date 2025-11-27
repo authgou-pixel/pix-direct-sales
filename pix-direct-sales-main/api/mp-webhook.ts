@@ -13,11 +13,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let paymentId = "";
     if (req.method === "POST") {
-      const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-      paymentId = body?.data?.id || body?.id || body?.resource?.id || body?.payment?.id || "";
+      const bodyUnknown = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+      const body = bodyUnknown as Record<string, unknown>;
+      paymentId = (body?.data as Record<string, unknown> | undefined)?.id as string || (body?.id as string) || (body?.resource as Record<string, unknown> | undefined)?.id as string || (body?.payment as Record<string, unknown> | undefined)?.id as string || "";
     } else {
-      const q: any = req.query || {};
-      paymentId = q?.id || q?.data_id || "";
+      const q = (req.query || {}) as Record<string, string | string[]>;
+      const idParam = q["id"];
+      const dataIdParam = q["data_id"];
+      paymentId = typeof idParam === "string" ? idParam : Array.isArray(idParam) ? idParam[0] : (typeof dataIdParam === "string" ? dataIdParam : Array.isArray(dataIdParam) ? dataIdParam[0] : "");
     }
 
     if (!paymentId) {
@@ -31,6 +34,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .maybeSingle();
 
     if (!sale) {
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("user_id,last_payment_id,status")
+        .eq("last_payment_id", paymentId)
+        .maybeSingle();
+      if (!sub) {
+        return res.status(200).json({ ok: true });
+      }
+      const MP_PLATFORM_ACCESS_TOKEN = process.env.MP_PLATFORM_ACCESS_TOKEN as string;
+      if (!MP_PLATFORM_ACCESS_TOKEN) {
+        return res.status(200).json({ ok: true });
+      }
+      const r = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+        headers: { Authorization: `Bearer ${MP_PLATFORM_ACCESS_TOKEN}` },
+      });
+      const d = await r.json();
+      if (!r.ok) {
+        return res.status(200).json({ ok: true });
+      }
+      const st = d?.status || sub.status || "pending";
+      if (st === "approved") {
+        const now = new Date();
+        const exp = new Date(now);
+        exp.setDate(exp.getDate() + 30);
+        await supabase
+          .from("subscriptions")
+          .update({ status: "active", activated_at: now.toISOString(), expires_at: exp.toISOString() })
+          .eq("user_id", sub.user_id);
+      } else {
+        await supabase
+          .from("subscriptions")
+          .update({ status: st })
+          .eq("user_id", sub.user_id);
+      }
       return res.status(200).json({ ok: true });
     }
 
@@ -62,8 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("buyer_email", sale.buyer_email);
 
     return res.status(200).json({ ok: true });
-  } catch (e: any) {
+  } catch (e) {
     return res.status(200).json({ ok: true });
   }
 }
-

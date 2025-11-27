@@ -168,6 +168,47 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          id: string
+          user_id: string
+          status: string
+          activated_at: string | null
+          expires_at: string | null
+          last_payment_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          status?: string
+          activated_at?: string | null
+          expires_at?: string | null
+          last_payment_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          status?: string
+          activated_at?: string | null
+          expires_at?: string | null
+          last_payment_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lessons: {
         Row: {
           id: string

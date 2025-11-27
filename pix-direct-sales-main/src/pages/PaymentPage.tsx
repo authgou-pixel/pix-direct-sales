@@ -28,6 +28,7 @@ const PaymentPage = () => {
   const [qrCodeBase64, setQrCodeBase64] = useState<string>("");
   const [paymentId, setPaymentId] = useState<string>("");
   const [status, setStatus] = useState<string>("pending");
+  const [sellerBlocked, setSellerBlocked] = useState<boolean>(false);
 
   useEffect(() => {
     loadProduct();
@@ -71,6 +72,12 @@ const PaymentPage = () => {
       const isJson = resp.headers.get("content-type")?.includes("application/json");
       const data = isJson ? await resp.json() : { error: await resp.text() };
       if (!resp.ok) {
+        if (resp.status === 403) {
+          setSellerBlocked(true);
+          toast.error("O vendedor precisa renovar a assinatura para ativar os pagamentos.");
+          setShowPayment(false);
+          return;
+        }
         const details = typeof data?.details === "string" ? data.details : JSON.stringify(data?.details ?? {});
         throw new Error(`${data?.error || "Erro ao gerar pagamento"}${details ? `: ${details}` : ""}`);
       }
@@ -81,8 +88,9 @@ const PaymentPage = () => {
       setStatus(data.status || "pending");
       setShowPayment(true);
       toast.success("Pagamento gerado! Escaneie o QR Code ou copie o código PIX");
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao gerar pagamento");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Erro ao gerar pagamento";
+      toast.error(message);
     }
   };
 
@@ -99,7 +107,7 @@ const PaymentPage = () => {
             clearInterval(interval);
           }
         }
-      } catch {}
+      } catch { void 0; }
     }, 5000);
     return () => clearInterval(interval);
   }, [paymentId]);
@@ -146,6 +154,11 @@ const PaymentPage = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              {sellerBlocked && (
+                <div className="border border-destructive/20 bg-destructive/10 text-destructive rounded p-3">
+                  Este vendedor precisa renovar a assinatura para ativar os pagamentos.
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="buyer_name">Seu Nome</Label>
                 <Input
@@ -172,6 +185,7 @@ const PaymentPage = () => {
               <Button 
                 className="w-full bg-gradient-hero hover:opacity-90 shadow-purple"
                 onClick={handleGeneratePayment}
+                disabled={sellerBlocked}
               >
                 Gerar Pagamento PIX
               </Button>

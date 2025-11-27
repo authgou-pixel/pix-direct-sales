@@ -31,6 +31,7 @@ const Members = lazy(() => import("./pages/Members"));
 const Products = lazy(() => import("./pages/Products"));
 const LessonView = lazy(() => import("./pages/LessonView"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Subscription = lazy(() => import("./pages/Subscription"));
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/dashboard/products" element={<Products />} />
             <Route path="/dashboard/new-product" element={<NewProduct />} />
             <Route path="/dashboard/settings" element={<Settings />} />
+            <Route path="/dashboard/subscription" element={<Subscription />} />
             <Route path="/dashboard/product/:productId" element={<ProductManage />} />
             <Route path="/members" element={<Members />} />
             <Route path="/members/product/:productId/lesson/:lessonId" element={<LessonView />} />

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Pencil } from "lucide-react";
+import { getCurrentSubscription, isSubscriptionActive, markExpiredIfNeeded } from "@/utils/subscription";
 
 type Product = {
   id: string;
@@ -26,6 +27,13 @@ const Products = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
+        return;
+      }
+      const sub = await getCurrentSubscription();
+      await markExpiredIfNeeded(sub);
+      if (!isSubscriptionActive(sub)) {
+        toast.error("Plano expirado. Renove para gerenciar produtos.");
+        navigate("/dashboard/subscription");
         return;
       }
       const userId = session.user.id;

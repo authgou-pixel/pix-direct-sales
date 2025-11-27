@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ResponsiveContainer, AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 import { filterByTimeframe, Timeframe, aggregateSeries } from "@/utils/dashboard";
+import { getCurrentSubscription, isSubscriptionActive, markExpiredIfNeeded } from "@/utils/subscription";
 
 interface Product {
   id: string;
@@ -57,6 +58,13 @@ const Dashboard = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
+        return;
+      }
+      const sub = await getCurrentSubscription();
+      await markExpiredIfNeeded(sub);
+      if (!isSubscriptionActive(sub)) {
+        toast.error("Seu plano venceu. Renove para continuar.");
+        navigate("/dashboard/subscription");
         return;
       }
       setUser(session.user);

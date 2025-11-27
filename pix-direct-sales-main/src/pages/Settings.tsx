@@ -15,15 +15,29 @@ const Settings = () => {
   const [hasConfig, setHasConfig] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
         return;
       }
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,expires_at")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
+      if (expired && sub?.status !== "expired") {
+        await supabase.from("subscriptions").update({ status: "expired" }).eq("user_id", session.user.id);
+      }
+      if (!sub || sub.status !== "active" || expired) {
+        toast.error("Seu plano venceu. Renove para continuar.");
+        navigate("/dashboard/subscription");
+        return;
+      }
       await loadConfig(session.user.id);
     };
-    checkAuth();
+    init();
   }, [navigate]);
 
   const loadConfig = async (userId: string) => {
@@ -40,8 +54,9 @@ const Settings = () => {
         setAccessToken("••••••••••••••••");
         setHasConfig(true);
       }
-    } catch (error: any) {
-      toast.error("Erro ao carregar configurações");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Erro ao carregar configurações";
+      toast.error(message);
     }
   };
 
@@ -53,6 +68,20 @@ const Settings = () => {
       if (!session) {
         toast.error("Você precisa estar logado");
         navigate("/auth");
+        return;
+      }
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,expires_at")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      const expired = sub?.expires_at ? new Date(sub.expires_at) <= new Date() : true;
+      if (expired && sub?.status !== "expired") {
+        await supabase.from("subscriptions").update({ status: "expired" }).eq("user_id", session.user.id);
+      }
+      if (!sub || sub.status !== "active" || expired) {
+        toast.error("Plano inativo. Renove sua assinatura.");
+        navigate("/dashboard/subscription");
         return;
       }
 
@@ -73,8 +102,9 @@ const Settings = () => {
       toast.success("Configuração salva com sucesso!");
       setAccessToken("••••••••••••••••");
       setHasConfig(true);
-    } catch (error: any) {
-      toast.error(error.message || "Erro ao salvar configuração");
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Erro ao salvar configuração";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
