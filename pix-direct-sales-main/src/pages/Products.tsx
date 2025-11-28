@@ -46,7 +46,8 @@ const Products = () => {
 
   const copyProductLink = (productId: string) => {
     const base = import.meta.env.BASE_URL || "/";
-    const link = `${window.location.origin}${base}pay/${productId}`;
+    const origin = import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
+    const link = `${origin}${base}pay/${productId}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
   };

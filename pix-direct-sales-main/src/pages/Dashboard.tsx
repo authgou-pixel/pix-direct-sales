@@ -179,7 +179,8 @@ const Dashboard = () => {
   };
 
   const copyProductLink = (productId: string) => {
-    const link = `${window.location.origin}/pay/${productId}`;
+    const origin = import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
+    const link = `${origin}/pay/${productId}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
   };

@@ -52,7 +52,7 @@ const Auth = () => {
           password,
           options: {
             data: { name },
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin}/dashboard`,
           },
         });
         
