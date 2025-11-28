@@ -22,6 +22,9 @@ const PaymentPage = () => {
   const [loading, setLoading] = useState(true);
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerName, setBuyerName] = useState("");
+  const [emailValid, setEmailValid] = useState<boolean>(false);
+  const [nameValid, setNameValid] = useState<boolean>(false);
+  const [touched, setTouched] = useState<{ email: boolean; name: boolean }>({ email: false, name: false });
   const [showPayment, setShowPayment] = useState(false);
   const [copied, setCopied] = useState(false);
   const [qrCode, setQrCode] = useState<string>("");
@@ -53,7 +56,7 @@ const PaymentPage = () => {
   };
 
   const handleGeneratePayment = async () => {
-    if (!buyerEmail || !buyerName) {
+    if (!buyerEmail || !buyerName || !emailValid || !nameValid) {
       toast.error("Preencha todos os campos");
       return;
     }
@@ -93,6 +96,16 @@ const PaymentPage = () => {
       toast.error(message);
     }
   };
+
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    setEmailValid(emailRegex.test(buyerEmail.trim()));
+  }, [buyerEmail]);
+
+  useEffect(() => {
+    const onlyLetters = buyerName.trim().length > 1;
+    setNameValid(onlyLetters);
+  }, [buyerName]);
 
   useEffect(() => {
     if (!paymentId) return;
@@ -160,32 +173,49 @@ const PaymentPage = () => {
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="buyer_name">Seu Nome</Label>
+                <Label htmlFor="buyer_name" className="text-primary">Seu Nome</Label>
                 <Input
                   id="buyer_name"
                   placeholder="Nome completo"
                   value={buyerName}
-                  onChange={(e) => setBuyerName(e.target.value)}
-                  className="border-primary/20"
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g, "");
+                    setBuyerName(v);
+                  }}
+                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                  aria-invalid={touched.name && !nameValid}
+                  className="border-primary/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary rounded-lg"
                 />
+                {touched.name && (
+                  <p className={`text-xs ${nameValid ? "text-success" : "text-destructive"}`}>
+                    {nameValid ? "Nome válido" : "Use apenas letras e espaços"}
+                  </p>
+                )}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="buyer_email">Seu Email</Label>
+                <Label htmlFor="buyer_email" className="text-primary">Seu Email</Label>
                 <Input
                   id="buyer_email"
                   type="email"
                   placeholder="seu@email.com"
                   value={buyerEmail}
                   onChange={(e) => setBuyerEmail(e.target.value)}
-                  className="border-primary/20"
+                  onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                  aria-invalid={touched.email && !emailValid}
+                  className="border-primary/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary rounded-lg"
                 />
+                {touched.email && (
+                  <p className={`text-xs ${emailValid ? "text-success" : "text-destructive"}`}>
+                    {emailValid ? "E‑mail válido" : "Informe um e‑mail válido"}
+                  </p>
+                )}
               </div>
 
               <Button 
                 className="w-full bg-gradient-hero hover:opacity-90 shadow-purple"
                 onClick={handleGeneratePayment}
-                disabled={sellerBlocked}
+                disabled={sellerBlocked || !emailValid || !nameValid}
               >
                 Gerar Pagamento PIX
               </Button>
