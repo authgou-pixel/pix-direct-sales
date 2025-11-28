@@ -29,6 +29,7 @@ const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const ProductManage = lazy(() => import("./pages/ProductManage"));
 const Members = lazy(() => import("./pages/Members"));
 const Products = lazy(() => import("./pages/Products"));
+const Sales = lazy(() => import("./pages/Sales"));
 const LessonView = lazy(() => import("./pages/LessonView"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Subscription = lazy(() => import("./pages/Subscription"));
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/products" element={<Products />} />
+            <Route path="/dashboard/sales" element={<Sales />} />
             <Route path="/dashboard/new-product" element={<NewProduct />} />
             <Route path="/dashboard/settings" element={<Settings />} />
             <Route path="/dashboard/subscription" element={<Subscription />} />

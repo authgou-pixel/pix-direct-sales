@@ -186,7 +186,7 @@ const Dashboard = () => {
   };
 
   const handleGoToSales = () => {
-    salesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    navigate("/dashboard/sales");
   };
   const pieColor = "#8A2BE2";
   const [mobileSidebarExpanded, setMobileSidebarExpanded] = useState<boolean>(false);
