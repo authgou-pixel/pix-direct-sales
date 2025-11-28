@@ -205,8 +205,8 @@ const PaymentPage = () => {
 
           <Card className="bg-white shadow-sm border rounded-xl">
             <CardHeader>
-              <CardTitle className="text-base tracking-wide">Formas de pagamento</CardTitle>
-              <CardDescription>Para finalizar, escolha uma forma de pagamento</CardDescription>
+              <CardTitle className="text-base tracking-wide text-[#2B2B2B]">Formas de pagamento</CardTitle>
+              <CardDescription className="text-neutral-700">Para finalizar, escolha uma forma de pagamento</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border-2 border-emerald-600 bg-emerald-50 px-4 py-3 flex items-center justify-between">
@@ -231,19 +231,19 @@ const PaymentPage = () => {
 
           <Card className="bg-white shadow-sm border rounded-xl">
             <CardHeader>
-              <CardTitle className="text-base tracking-wide">Resumo</CardTitle>
+              <CardTitle className="text-base tracking-wide text-[#2B2B2B]">Resumo</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded bg-muted" />
                 <div>
-                  <p className="text-sm font-medium">{product.name}</p>
-                  <p className="text-xs text-muted-foreground">{product.description}</p>
+                  <p className="text-sm font-medium text-[#2B2B2B]">{product.name}</p>
+                  <p className="text-xs text-neutral-700">{product.description}</p>
                 </div>
               </div>
-              <div className="border-t pt-3 text-sm">
-                <div className="flex justify-between"><span>Subtotal</span><span>R$ {product.price.toFixed(2)}</span></div>
-                <div className="flex justify-between font-semibold mt-2"><span>Total</span><span>R$ {product.price.toFixed(2)}</span></div>
+              <div className="border-t pt-3 text-sm text-[#2B2B2B]">
+                <div className="flex justify-between"><span className="text-neutral-700">Subtotal</span><span className="text-[#2B2B2B]">R$ {product.price.toFixed(2)}</span></div>
+                <div className="flex justify-between font-semibold mt-2"><span className="text-[#2B2B2B]">Total</span><span className="text-[#2B2B2B]">R$ {product.price.toFixed(2)}</span></div>
               </div>
             </CardContent>
           </Card>
