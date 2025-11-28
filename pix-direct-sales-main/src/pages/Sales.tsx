@@ -5,8 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 // removed Input import as it is not used
 import { toast } from "sonner";
+import { Check, Clock } from "lucide-react";
 
 type Sale = {
   id: string;
@@ -29,6 +33,9 @@ const Sales = () => {
   const [products, setProducts] = useState<Record<string, Product>>({});
   const [timeframe, setTimeframe] = useState<Timeframe>("custom");
   const [range, setRange] = useState<{ from?: Date; to?: Date }>({});
+  const [onlyConfirmed, setOnlyConfirmed] = useState(false);
+  const [limitTo4, setLimitTo4] = useState(false);
+  const [historySaleId, setHistorySaleId] = useState<string | null>(null);
 
   useEffect(() => {
     const init = async () => {
@@ -110,6 +117,89 @@ const Sales = () => {
     }
   };
 
+  const applyFilters = (list: Sale[]) => {
+    let filtered = list;
+    if (onlyConfirmed) {
+      filtered = filtered.filter((s) => (s.payment_status || "").toLowerCase() === "approved");
+    }
+    if (limitTo4) {
+      filtered = filtered.slice(0, 4);
+    }
+    return filtered;
+  };
+
+  const getStatusInfo = (status?: string) => {
+    const s = (status || "").toLowerCase();
+    if (s === "approved") return { label: "APROVADO", color: "bg-[#00B14F] text-white" };
+    if (s === "pending") return { label: "PENDENTE", color: "bg-[#FFA500] text-black" };
+    return { label: (status || "-").toUpperCase(), color: "bg-muted text-foreground" };
+  };
+
+  const getHistory = (id: string) => {
+    const raw = localStorage.getItem(`sale_status_history_${id}`);
+    return raw ? JSON.parse(raw) as Array<{ at: string; from: string; to: string }> : [];
+  };
+
+  const pushHistory = (id: string, from: string, to: string) => {
+    const hist = getHistory(id);
+    hist.unshift({ at: new Date().toISOString(), from, to });
+    localStorage.setItem(`sale_status_history_${id}`, JSON.stringify(hist));
+  };
+
+  const updateStatus = async (sale: Sale, toStatus: string) => {
+    const fromStatus = sale.payment_status || "";
+    try {
+      const { error } = await supabase
+        .from("sales")
+        .update({ payment_status: toStatus })
+        .eq("id", sale.id);
+      if (error) throw error;
+      setSales((prev) => prev.map((s) => s.id === sale.id ? { ...s, payment_status: toStatus } : s));
+      pushHistory(sale.id, fromStatus, toStatus);
+      toast.success("Status atualizado");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Falha ao atualizar status";
+      toast.error(msg);
+    }
+  };
+
+  const exportJSON = () => {
+    const data = applyFilters(sales);
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vendas.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCSV = () => {
+    const data = applyFilters(sales);
+    const headers = ["id","created_at","amount","product","method","client","status"];
+    const rows = data.map(s => [
+      s.id,
+      new Date(s.created_at).toISOString(),
+      String(s.amount),
+      s.product_id ? (products[s.product_id]?.name || s.product_id) : "",
+      "PIX",
+      s.buyer_name || s.buyer_email || "",
+      (s.payment_status || "").toUpperCase(),
+    ]);
+    const csv = [headers.join(","), ...rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vendas.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/50 backdrop-blur-sm border-primary/20">
@@ -124,6 +214,14 @@ const Sales = () => {
                 <Calendar mode="range" selected={{ from: range.from, to: range.to }} onSelect={(r: { from?: Date; to?: Date } | undefined) => setRange(r || {})} numberOfMonths={2} />
               </PopoverContent>
             </Popover>
+            <Button variant={onlyConfirmed ? "default" : "outline"} size="sm" onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>Apenas confirmadas</Button>
+            <Button variant={limitTo4 ? "default" : "outline"} size="sm" onClick={() => setLimitTo4(v => !v)} aria-pressed={limitTo4}>Últimas 4</Button>
+            <Button variant="outline" size="sm" onClick={exportJSON}>Exportar JSON</Button>
+            <Button variant="outline" size="sm" onClick={exportCSV}>Exportar CSV</Button>
+          </div>
+          <div className="text-xs text-muted-foreground hidden sm:block">
+            <span className="mr-3">Identificadas: {sales.length}</span>
+            <span>Confirmadas: {sales.filter(s => (s.payment_status || '').toLowerCase() === 'approved').length}</span>
           </div>
         </div>
       </header>
@@ -142,21 +240,66 @@ const Sales = () => {
               <div className="h-24 flex items-center justify-center text-muted-foreground">Sem vendas no período selecionado</div>
             ) : (
               <div className="overflow-x-auto">
-                <div className="grid grid-cols-5 gap-2 px-2 pb-2 text-xs text-muted-foreground min-w-[720px]">
+                <div className="grid grid-cols-7 gap-2 px-2 pb-2 text-xs text-muted-foreground min-w-[900px]">
                   <div>Data</div>
                   <div>Valor</div>
                   <div>Item</div>
                   <div>Método</div>
                   <div>Cliente</div>
+                  <div>Status</div>
+                  <div>Ações</div>
                 </div>
-                <div className="divide-y min-w-[720px]">
-                  {sales.map(s => (
-                    <div key={s.id} className="grid grid-cols-5 gap-2 px-2 py-2 text-sm">
+                <div className="divide-y min-w-[900px]">
+                  {applyFilters(sales).map(s => (
+                    <div key={s.id} className="grid grid-cols-7 gap-2 px-2 py-2 text-sm">
                       <div>{new Date(s.created_at).toLocaleString()}</div>
                       <div>R$ {Number(s.amount).toFixed(2)}</div>
                       <div>{s.product_id ? (products[s.product_id]?.name || s.product_id) : "-"}</div>
                       <div>PIX</div>
                       <div>{s.buyer_name || s.buyer_email || "-"}</div>
+                      <div>
+                        {(() => {
+                          const info = getStatusInfo(s.payment_status);
+                          return <Badge className={`${info.color} border-transparent`}>{info.label}</Badge>;
+                        })()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select value={(s.payment_status || '').toLowerCase()} onValueChange={(val) => updateStatus(s, val)}>
+                          <SelectTrigger className="w-[140px] h-8">
+                            <SelectValue placeholder="Alterar status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="approved"><div className="flex items-center gap-2"><Check className="h-3 w-3" /> Aprovado</div></SelectItem>
+                            <SelectItem value="pending"><div className="flex items-center gap-2"><Clock className="h-3 w-3" /> Pendente</div></SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Dialog open={historySaleId === s.id} onOpenChange={(open) => setHistorySaleId(open ? s.id : null)}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">Histórico</Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Histórico de Status</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-2 text-sm">
+                              {getHistory(s.id).length === 0 ? (
+                                <div className="text-muted-foreground">Sem alterações registradas.</div>
+                              ) : (
+                                getHistory(s.id).map((h, idx) => (
+                                  <div key={idx} className="flex items-center justify-between border rounded px-3 py-2">
+                                    <div>{new Date(h.at).toLocaleString()}</div>
+                                    <div className="flex items-center gap-2">
+                                      <Badge className="bg-muted text-foreground border-transparent">{(h.from || '-').toUpperCase()}</Badge>
+                                      <span className="text-muted-foreground">→</span>
+                                      <Badge className="bg-muted text-foreground border-transparent">{(h.to || '-').toUpperCase()}</Badge>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
                     </div>
                   ))}
                 </div>
