@@ -36,6 +36,7 @@ const Sales = () => {
   const [onlyConfirmed, setOnlyConfirmed] = useState(false);
   const [limitTo4, setLimitTo4] = useState(false);
   const [historySaleId, setHistorySaleId] = useState<string | null>(null);
+  const [mobileMenuExpanded, setMobileMenuExpanded] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -204,22 +205,28 @@ const Sales = () => {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/50 backdrop-blur-sm border-primary/20">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>Voltar ao Dashboard</Button>
+          <div className="hidden md:flex items-center gap-2">
+            <Button variant="ghost" className="h-10 px-3" onClick={() => navigate('/dashboard')}>Voltar ao Dashboard</Button>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="default" size="sm">Selecionar período</Button>
+                <Button variant="ghost" className="h-10 px-3">Selecionar período</Button>
               </PopoverTrigger>
               <PopoverContent className="p-2 bg-card border border-border rounded-lg shadow-md w-[95vw] max-w-[680px] sm:w-auto sm:min-w-[640px]" align="center" sideOffset={8}>
                 <Calendar mode="range" selected={{ from: range.from, to: range.to }} onSelect={(r: { from?: Date; to?: Date } | undefined) => setRange(r || {})} numberOfMonths={2} />
               </PopoverContent>
             </Popover>
-            <Button variant={onlyConfirmed ? "default" : "outline"} size="sm" onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>Apenas confirmadas</Button>
-            <Button variant={limitTo4 ? "default" : "outline"} size="sm" onClick={() => setLimitTo4(v => !v)} aria-pressed={limitTo4}>Últimas 4</Button>
-            <Button variant="outline" size="sm" onClick={exportJSON}>Exportar JSON</Button>
-            <Button variant="outline" size="sm" onClick={exportCSV}>Exportar CSV</Button>
+            <Button variant={onlyConfirmed ? "default" : "ghost"} className="h-10 px-3" onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>Apenas confirmadas</Button>
+            <Button variant="ghost" className="h-10 px-3" onClick={exportJSON}>Exportar JSON</Button>
+            <Button variant="ghost" className="h-10 px-3" onClick={exportCSV}>Exportar CSV</Button>
           </div>
-          <div className="text-xs text-muted-foreground hidden sm:block">
+          <button
+            aria-label="Abrir menu"
+            className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-full bg-card border border-border/60"
+            onClick={() => setMobileMenuExpanded(v => !v)}
+          >
+            <span className="text-xl">☰</span>
+          </button>
+          <div className="text-xs text-muted-foreground hidden md:block">
             <span className="mr-3">Identificadas: {sales.length}</span>
             <span>Confirmadas: {sales.filter(s => (s.payment_status || '').toLowerCase() === 'approved').length}</span>
           </div>
@@ -227,6 +234,34 @@ const Sales = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6">
+        <aside
+          className={`md:hidden fixed left-0 top-0 h-screen bg-card border-r border-border/50 pt-16 transition-[width] duration-300 ease-out overflow-hidden z-30 ${mobileMenuExpanded ? "w-[220px]" : "w-[64px]"}`}
+        >
+          <nav className="flex flex-col gap-2 px-3">
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate('/dashboard'); setMobileMenuExpanded(false); }}>
+              {mobileMenuExpanded && <span>Voltar ao Dashboard</span>}
+            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`}>
+                  {mobileMenuExpanded && <span>Selecionar período</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-2 bg-card border border-border rounded-lg shadow-md w-[95vw] max-w-[680px] sm:w-auto sm:min-w-[640px]" align="center" sideOffset={8}>
+                <Calendar mode="range" selected={{ from: range.from, to: range.to }} onSelect={(r: { from?: Date; to?: Date } | undefined) => setRange(r || {})} numberOfMonths={2} />
+              </PopoverContent>
+            </Popover>
+            <Button variant={onlyConfirmed ? "default" : "ghost"} className={`justify-start h-12 px-2 gap-3`} onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>
+              {mobileMenuExpanded && <span>Apenas confirmadas</span>}
+            </Button>
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { exportJSON(); setMobileMenuExpanded(false); }}>
+              {mobileMenuExpanded && <span>Exportar JSON</span>}
+            </Button>
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { exportCSV(); setMobileMenuExpanded(false); }}>
+              {mobileMenuExpanded && <span>Exportar CSV</span>}
+            </Button>
+          </nav>
+        </aside>
         <Card className="border-primary/20">
           <CardHeader>
             <CardTitle className="text-sm">Transações</CardTitle>
