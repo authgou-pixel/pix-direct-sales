@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, Package, HelpCircle, LogOut, CreditCard, Settings as SettingsIcon, Users } from "lucide-react";
+import { DollarSign, Package, HelpCircle, LogOut, CreditCard, Settings as SettingsIcon, Users, Bell, CheckCircle2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
 import { filterByTimeframe, Timeframe, aggregateSeries } from "@/utils/dashboard";
 import { getCurrentSubscription, isSubscriptionActive, markExpiredIfNeeded } from "@/utils/subscription";
@@ -47,6 +48,8 @@ const Dashboard = () => {
   const [series, setSeries] = useState<Array<{ date: string; value: number }>>([]);
   const navigate = useNavigate();
   const salesSectionRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState<Array<{ id: string; type: "sale" | "alert"; message: string; ts: string; read: boolean }>>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -62,6 +65,9 @@ const Dashboard = () => {
       }
       setUser(session.user);
       await loadDashboardData(session.user.id);
+      loadPersistedNotifications(session.user.id);
+      await loadAndGenerateAlerts(session.user.id);
+      subscribeRealtime(session.user.id);
     };
     checkAuth();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
@@ -73,6 +79,104 @@ const Dashboard = () => {
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const loadPersistedNotifications = (userId: string) => {
+    try {
+      const raw = localStorage.getItem(`notifications_${userId}`);
+      const list: Array<{ id: string; type: "sale" | "alert"; message: string; ts: string; read: boolean }> = raw ? JSON.parse(raw) : [];
+      setNotifications(list);
+      setUnreadCount(list.filter((n) => !n.read).length);
+    } catch { setNotifications([]); setUnreadCount(0); }
+  };
+
+  const persistNotifications = (userId: string, list: typeof notifications) => {
+    try {
+      localStorage.setItem(`notifications_${userId}`, JSON.stringify(list));
+    } catch { /* ignore */ }
+  };
+
+  const pushNotification = (n: { id: string; type: "sale" | "alert"; message: string; ts: string; read: boolean }) => {
+    setNotifications((prev) => {
+      const exists = prev.some((x) => x.id === n.id);
+      const next = exists ? prev : [n, ...prev].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime());
+      if (user?.id) persistNotifications(user.id, next);
+      setUnreadCount(next.filter((x) => !x.read).length);
+      return next;
+    });
+  };
+
+  const markAllAsRead = () => {
+    setNotifications((prev) => {
+      const next = prev.map((n) => ({ ...n, read: true }));
+      if (user?.id) persistNotifications(user.id, next);
+      setUnreadCount(0);
+      return next;
+    });
+  };
+
+  const loadAndGenerateAlerts = async (userId: string) => {
+    try {
+      const { data: sub } = await supabase
+        .from("subscriptions")
+        .select("status,expires_at")
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (!sub?.expires_at) return;
+      const exp = new Date(sub.expires_at);
+      const now = new Date();
+      const thresholds = [7, 3, 1];
+      thresholds.forEach((days) => {
+        const id = `alert:exp:${days}:${exp.toISOString()}`;
+        const exists = notifications.some((n) => n.id === id);
+        const msLeft = exp.getTime() - now.getTime();
+        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+        if (!exists && daysLeft <= days && daysLeft >= 0) {
+          const msg = daysLeft === 0 ? "Seu plano expira hoje." : `Seu plano expira em ${daysLeft} dia(s).`;
+          pushNotification({ id, type: "alert", message: msg, ts: new Date().toISOString(), read: false });
+        }
+      });
+    } catch { /* ignore */ }
+  };
+
+  const subscribeRealtime = (userId: string) => {
+    try {
+      const ch = supabase.channel(`sales-notify-${userId}`)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sales', filter: `seller_id=eq.${userId}` }, (payload: any) => {
+          const s = payload?.new as Sale | undefined;
+          if (!s) return;
+          const status = (s.payment_status || '').toLowerCase();
+          if (status === 'approved') {
+            const id = `sale:${s.id}:approved`;
+            const msg = `Venda aprovada: R$ ${Number(s.amount).toFixed(2)}`;
+            pushNotification({ id, type: 'sale', message: msg, ts: s.created_at, read: false });
+          }
+        })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sales', filter: `seller_id=eq.${userId}` }, (payload: any) => {
+          const s = payload?.new as Sale | undefined;
+          if (!s) return;
+          const status = (s.payment_status || '').toLowerCase();
+          if (status === 'approved') {
+            const id = `sale:${s.id}:approved`;
+            const msg = `Venda aprovada: R$ ${Number(s.amount).toFixed(2)}`;
+            pushNotification({ id, type: 'sale', message: msg, ts: s.created_at, read: false });
+          }
+        })
+        .subscribe();
+      return ch;
+    } catch { /* ignore */ }
+  };
+
+  const timeAgo = (iso: string) => {
+    const d = new Date(iso);
+    const now = new Date();
+    const diffMs = now.getTime() - d.getTime();
+    const minutes = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (days > 0) return `${days} dia(s) atrás`;
+    if (hours > 0) return `${hours} hora(s) atrás`;
+    return `${minutes} min atrás`;
+  };
 
   const loadDashboardData = async (userId: string) => {
     let hadError = false;
@@ -218,6 +322,48 @@ const Dashboard = () => {
               <CreditCard className="h-4 w-4" />
               Pagamentos
             </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="relative h-10 w-10 rounded-full bg-card border border-border/60 flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[22px] h-[18px] px-1.5 rounded-full bg-red-500 text-white text-[10px] font-semibold flex items-center justify-center">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 w-[360px] sm:w-[420px] bg-card border border-border rounded-lg shadow-md" align="end" sideOffset={8}>
+                <div className="p-4 border-b flex items-center justify-between">
+                  <div className="font-semibold">Notificações</div>
+                  <button className="text-xs text-primary" onClick={markAllAsRead}>Marcar todas como lidas</button>
+                </div>
+                <div className="max-h-[360px] overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="p-4 text-sm text-muted-foreground">Sem notificações</div>
+                  ) : (
+                    notifications.sort((a,b)=> new Date(b.ts).getTime() - new Date(a.ts).getTime()).map((n) => (
+                      <div key={n.id} className={`px-4 py-3 flex items-start gap-3 ${n.read ? '' : 'bg-muted/30'}`}>
+                        <div className="mt-0.5">
+                          {n.type === 'sale' ? (
+                            <CheckCircle2 className="h-4 w-4 text-[#00B14F]" />
+                          ) : (
+                            <AlertTriangle className="h-4 w-4 text-[#FFA500]" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-sm">{n.message}</div>
+                          <div className="text-xs text-muted-foreground">{timeAgo(n.ts)}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="p-3 border-t text-right">
+                  <Button size="sm" variant="ghost" className="h-8" onClick={() => navigate('/dashboard')}>Ver todas as notificações</Button>
+                </div>
+              </PopoverContent>
+            </Popover>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center justify-center">
