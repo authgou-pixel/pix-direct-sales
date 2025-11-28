@@ -352,33 +352,61 @@ const Dashboard = () => {
         </Card>
         </div>
       </main>
-      <aside className={`hidden md:flex fixed left-0 top-0 h-screen bg-card border-r border-border/50 p-4 flex-col gap-3 transition-[width] duration-300 ease-out ${desktopSidebarCollapsed ? "w-[64px]" : "w-[250px]"}`}>
-        <div className={desktopSidebarCollapsed ? "hidden" : "text-sm font-semibold text-muted-foreground mb-1"}>Navegação</div>
-        <Button variant="outline" className="justify-start gap-2" onClick={() => navigate("/dashboard")}>
-          <Package className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span>Produtos</span>}
+      <aside className={`hidden md:flex fixed left-0 top-0 h-screen bg-transparent p-4 flex-col gap-3 transition-[width] duration-300 ease-out ${desktopSidebarCollapsed ? "w-[64px]" : "w-[250px]"}`}>
+        <Button 
+          variant="ghost"
+          className="justify-start gap-2 bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-10 px-2"
+          onClick={() => navigate("/dashboard")}
+        >
+          <Package className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span className="text-foreground">Produtos</span>}
         </Button>
         {!desktopSidebarCollapsed && (
           <div className="pl-6 flex flex-col gap-2">
-            <Button variant="ghost" className="justify-start" onClick={() => navigate("/dashboard/new-product")}>Criar Produto</Button>
-            <Button variant="ghost" className="justify-start" onClick={() => navigate("/dashboard/products")}>Produtos Criados</Button>
+            <Button 
+              variant="ghost" 
+              className="justify-start bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-9 px-2"
+              onClick={() => navigate("/dashboard/new-product")}
+            >
+              <span className="text-foreground">Criar Produto</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="justify-start bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-9 px-2"
+              onClick={() => navigate("/dashboard/products")}
+            >
+              <span className="text-foreground">Produtos Criados</span>
+            </Button>
           </div>
         )}
-        <Button variant="outline" className="justify-start gap-2" onClick={handleGoToSales}>
-          <DollarSign className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span>Vendas</span>}
+        <Button 
+          variant="ghost" 
+          className="justify-start gap-2 bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-10 px-2"
+          onClick={handleGoToSales}
+        >
+          <DollarSign className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span className="text-foreground">Vendas</span>}
         </Button>
-        <Button variant="outline" className="justify-start gap-2" onClick={() => navigate("/dashboard/settings")}>
-          <CreditCard className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span>Pagamentos</span>}
+        <Button 
+          variant="ghost" 
+          className="justify-start gap-2 bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-10 px-2"
+          onClick={() => navigate("/dashboard/settings")}
+        >
+          <CreditCard className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span className="text-foreground">Pagamentos</span>}
         </Button>
         {!desktopSidebarCollapsed && (
           <Button
-            className="justify-start gap-2 bg-gradient-to-r from-primary to-purple-700 text-white"
+            variant="ghost"
+            className="justify-start gap-2 bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-10 px-2 text-foreground"
             onClick={() => navigate("/dashboard/subscription")}
           >
             Upgrade
           </Button>
         )}
-        <Button variant="outline" className="justify-start gap-2 mt-auto" onClick={() => navigate("/dashboard/settings")}> 
-          <SettingsIcon className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span>Configurações</span>}
+        <Button 
+          variant="ghost" 
+          className="justify-start gap-2 mt-auto bg-transparent hover:bg-transparent border-none rounded-none shadow-none h-10 px-2"
+          onClick={() => navigate("/dashboard/settings")}
+        > 
+          <SettingsIcon className="h-4 w-4" /> {desktopSidebarCollapsed ? null : <span className="text-foreground">Configurações</span>}
         </Button>
       </aside>
       <button
@@ -390,7 +418,7 @@ const Dashboard = () => {
       </button>
       <button
         aria-label="Alternar menu"
-        className="hidden md:flex fixed left-3 top-3 z-40 h-10 w-10 rounded-full bg-card border border-border/60 items-center justify-center"
+        className="hidden md:flex fixed left-3 top-3 z-40 h-10 w-10 items-center justify-center bg-transparent hover:bg-transparent border-none shadow-none"
         onClick={() => setDesktopSidebarCollapsed((v) => !v)}
       >
         <span className="text-xl">☰</span>
