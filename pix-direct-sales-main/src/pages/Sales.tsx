@@ -203,8 +203,8 @@ const Sales = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-card/50 backdrop-blur-sm border-primary/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="relative z-40 border-b bg-card/50 backdrop-blur-sm border-primary/20">
+        <div className={`container mx-auto px-4 py-4 flex items-center justify-between md:px-6 ${mobileMenuExpanded ? "pl-[76px]" : "pl-0"} md:pl-0`}>
           <div className="hidden md:flex items-center gap-2">
             <Button variant="ghost" className="h-10 px-3" onClick={() => navigate('/dashboard')}>Voltar ao Dashboard</Button>
             <Popover>
@@ -233,17 +233,17 @@ const Sales = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <main className={`mx-auto px-4 py-6 md:px-6 ${mobileMenuExpanded ? "pl-[232px]" : "pl-[76px]"} md:pl-0`}>
         <aside
           className={`md:hidden fixed left-0 top-0 h-screen bg-card border-r border-border/50 pt-16 transition-[width] duration-300 ease-out overflow-hidden z-30 ${mobileMenuExpanded ? "w-[220px]" : "w-[64px]"}`}
         >
           <nav className="flex flex-col gap-2 px-3">
-            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate('/dashboard'); setMobileMenuExpanded(false); }}>
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3 bg-transparent hover:bg-transparent border-none rounded-none shadow-none`} onClick={() => { navigate('/dashboard'); setMobileMenuExpanded(false); }}>
               {mobileMenuExpanded && <span>Voltar ao Dashboard</span>}
             </Button>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`}>
+                <Button variant="ghost" className={`justify-start h-12 px-2 gap-3 bg-transparent hover:bg-transparent border-none rounded-none shadow-none`}>
                   {mobileMenuExpanded && <span>Selecionar período</span>}
                 </Button>
               </PopoverTrigger>
@@ -251,18 +251,18 @@ const Sales = () => {
                 <Calendar mode="range" selected={{ from: range.from, to: range.to }} onSelect={(r: { from?: Date; to?: Date } | undefined) => setRange(r || {})} numberOfMonths={2} />
               </PopoverContent>
             </Popover>
-            <Button variant={onlyConfirmed ? "default" : "ghost"} className={`justify-start h-12 px-2 gap-3`} onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>
+            <Button variant={onlyConfirmed ? "default" : "ghost"} className={`justify-start h-12 px-2 gap-3 bg-transparent hover:bg-transparent border-none rounded-none shadow-none`} onClick={() => setOnlyConfirmed(v => !v)} aria-pressed={onlyConfirmed}>
               {mobileMenuExpanded && <span>Apenas confirmadas</span>}
             </Button>
-            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { exportJSON(); setMobileMenuExpanded(false); }}>
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3 bg-transparent hover:bg-transparent border-none rounded-none shadow-none`} onClick={() => { exportJSON(); setMobileMenuExpanded(false); }}>
               {mobileMenuExpanded && <span>Exportar JSON</span>}
             </Button>
-            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { exportCSV(); setMobileMenuExpanded(false); }}>
+            <Button variant="ghost" className={`justify-start h-12 px-2 gap-3 bg-transparent hover:bg-transparent border-none rounded-none shadow-none`} onClick={() => { exportCSV(); setMobileMenuExpanded(false); }}>
               {mobileMenuExpanded && <span>Exportar CSV</span>}
             </Button>
           </nav>
         </aside>
-        <Card className="border-primary/20">
+        <Card className="border-primary/20 relative z-10">
           <CardHeader>
             <CardTitle className="text-sm">Transações</CardTitle>
           </CardHeader>
