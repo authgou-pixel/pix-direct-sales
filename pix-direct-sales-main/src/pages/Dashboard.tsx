@@ -188,6 +188,7 @@ const Dashboard = () => {
     salesSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   const pieColor = "#8A2BE2";
+  const [mobileSidebarExpanded, setMobileSidebarExpanded] = useState<boolean>(false);
 
   if (loading) {
     return (
@@ -211,10 +212,23 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/settings")} className="gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard/settings")} className="gap-2 hidden md:flex">
               <CreditCard className="h-4 w-4" />
               Pagamentos
             </Button>
+            <div className="md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button aria-label="Abrir opções" className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-card border border-border/60">
+                    <span className="h-1 w-1 rounded-full bg-primary"></span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[180px]">
+                  <DropdownMenuItem onClick={() => navigate("/members")}>Área de Membros</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive">Sair</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center justify-center">
@@ -374,6 +388,39 @@ const Dashboard = () => {
         <Button variant="outline" className="justify-start gap-2 mt-auto" onClick={() => navigate("/dashboard/settings")}> 
           <SettingsIcon className="h-4 w-4" /> Configurações
         </Button>
+      </aside>
+      <button
+        aria-label="Abrir menu"
+        className="md:hidden fixed left-3 top-3 z-40 h-10 w-10 rounded-full bg-card border border-border/60 flex items-center justify-center"
+        onClick={() => setMobileSidebarExpanded((v) => !v)}
+      >
+        <span className="text-xl">☰</span>
+      </button>
+      <aside
+        className={`md:hidden fixed left-0 top-0 h-screen bg-card border-r border-border/50 pt-16 transition-[width] duration-300 ease-out overflow-hidden z-30 ${mobileSidebarExpanded ? "w-[220px]" : "w-[64px]"}`}
+      >
+        <nav className="flex flex-col gap-2 px-3">
+          <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate("/dashboard"); setMobileSidebarExpanded(false); }}>
+            <Package className="h-5 w-5" />
+            {mobileSidebarExpanded && <span>Produtos</span>}
+          </Button>
+          <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate("/dashboard/products"); setMobileSidebarExpanded(false); }}>
+            <Package className="h-5 w-5" />
+            {mobileSidebarExpanded && <span>Produtos Criados</span>}
+          </Button>
+          <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate("/dashboard/new-product"); setMobileSidebarExpanded(false); }}>
+            <Package className="h-5 w-5" />
+            {mobileSidebarExpanded && <span>Criar Produto</span>}
+          </Button>
+          <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { handleGoToSales(); setMobileSidebarExpanded(false); }}>
+            <DollarSign className="h-5 w-5" />
+            {mobileSidebarExpanded && <span>Vendas</span>}
+          </Button>
+          <Button variant="ghost" className={`justify-start h-12 px-2 gap-3`} onClick={() => { navigate("/dashboard/settings"); setMobileSidebarExpanded(false); }}>
+            <CreditCard className="h-5 w-5" />
+            {mobileSidebarExpanded && <span>Pagamentos</span>}
+          </Button>
+        </nav>
       </aside>
     </div>
   );
