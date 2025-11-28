@@ -153,11 +153,11 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-background p-4 flex items-center justify-center">
-      <Card className="w-full max-w-lg shadow-purple border-primary/20">
+    <div className="payment-bg p-4 flex items-center justify-center">
+      <Card className="w-full max-w-md rounded-xl border-[#8A2BE2]/25 bg-[#141114]/90 backdrop-blur shadow-[0_10px_40px_rgba(0,0,0,0.45)]">
         {!showPayment ? (
           <>
-            <CardHeader>
+            <CardHeader className="space-y-1">
               <CardTitle className="text-2xl">{product.name}</CardTitle>
               <CardDescription>{product.description}</CardDescription>
               <div className="pt-4">
@@ -184,7 +184,7 @@ const PaymentPage = () => {
                   }}
                   onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                   aria-invalid={touched.name && !nameValid}
-                  className="border-primary/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary rounded-lg"
+                  className="rounded-lg bg-[#1B171F] border-[#8A2BE2]/30 text-white placeholder-[#A7A7A7] focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:border-[#8A2BE2]"
                 />
                 {touched.name && (
                   <p className={`text-xs ${nameValid ? "text-success" : "text-destructive"}`}>
@@ -203,7 +203,7 @@ const PaymentPage = () => {
                   onChange={(e) => setBuyerEmail(e.target.value)}
                   onBlur={() => setTouched((t) => ({ ...t, email: true }))}
                   aria-invalid={touched.email && !emailValid}
-                  className="border-primary/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary rounded-lg"
+                  className="rounded-lg bg-[#1B171F] border-[#8A2BE2]/30 text-white placeholder-[#A7A7A7] focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:border-[#8A2BE2]"
                 />
                 {touched.email && (
                   <p className={`text-xs ${emailValid ? "text-success" : "text-destructive"}`}>
@@ -213,7 +213,7 @@ const PaymentPage = () => {
               </div>
 
               <Button 
-                className="w-full bg-gradient-hero hover:opacity-90 shadow-purple"
+                className="w-full bg-gradient-hero hover:opacity-90 shadow-purple rounded-lg"
                 onClick={handleGeneratePayment}
                 disabled={sellerBlocked || !emailValid || !nameValid}
               >

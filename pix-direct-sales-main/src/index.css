@@ -175,4 +175,21 @@ All colors MUST be HSL.
 html, body {
   overflow-x: hidden;
 }
+
+.payment-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(1000px 600px at 50% 10%, hsl(270 80% 20% / 0.35), transparent 70%),
+    radial-gradient(900px 500px at 50% 90%, hsl(270 80% 18% / 0.30), transparent 75%),
+    linear-gradient(120deg, hsl(270 25% 10%), hsl(270 25% 8%));
+  position: relative;
+}
+
+.payment-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(135deg, hsl(0 0% 100% / 0.04) 0px, hsl(0 0% 100% / 0.04) 2px, transparent 2px, transparent 10px);
+  pointer-events: none;
+}
 }
