@@ -216,19 +216,6 @@ const Dashboard = () => {
               <CreditCard className="h-4 w-4" />
               Pagamentos
             </Button>
-            <div className="md:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button aria-label="Abrir opções" className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-card border border-border/60">
-                    <span className="h-1 w-1 rounded-full bg-primary"></span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-[180px]">
-                  <DropdownMenuItem onClick={() => navigate("/members")}>Área de Membros</DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive">Sair</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center justify-center">
@@ -253,7 +240,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <main className="mx-auto max-w-6xl px-4 md:px-6 py-6 md:pl-[300px]">
+      <main className={`mx-auto max-w-6xl px-4 md:px-6 py-6 md:pl-[300px] ${mobileSidebarExpanded ? "pl-[232px]" : "pl-[76px]"}`}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-card border rounded-xl">
             <CardHeader className="pb-2">
