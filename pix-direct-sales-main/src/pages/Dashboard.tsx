@@ -201,10 +201,10 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <div className="w-full bg-card/80 border-b border-border/50 z-20">
-        <div className={`mx-auto max-w-6xl py-4 flex items-center justify-between px-4 md:px-6 ${mobileSidebarExpanded ? "pl-[232px]" : "pl-[76px]"} md:pl-6`}>
+        <div className={`mx-auto max-w-6xl py-4 flex items-center justify-between px-4 md:px-6 ${mobileSidebarExpanded ? "pl-[232px]" : "pl-[76px]"} md:pl-[300px]`}>
           <div className="flex items-center gap-4">
             <div className="text-sm text-muted-foreground">R$ {periodStats.revenue.toFixed(2)} / R$ 10,00K</div>
-            <div className="w-28 h-2 bg-muted rounded">
+            <div className="w-24 md:w-40 h-2 bg-muted rounded">
               <div
                 className="h-2 rounded"
                 style={{ width: `${Math.min((periodStats.revenue / 10000) * 100, 100)}%`, backgroundColor: "#800080" }}
