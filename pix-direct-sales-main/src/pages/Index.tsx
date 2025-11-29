@@ -61,15 +61,15 @@ const Index = () => {
                 </div>
                 
               </div>
-              <div className="order-2 md:order-2 relative">
+              <div className="order-2 md:order-2 relative mobile-hero-container">
                 <div className="absolute left-8 top-0 md:left-16 md:-top-6 z-20 sales-bounce">
-                  <div className="rounded-xl bg-[#232323]/90 border border-white/10 shadow-xl px-5 py-4 md:scale-[1.18]">
+                  <div className="rounded-xl bg-[#232323]/90 border border-white/10 shadow-xl px-5 py-4 md:scale-[1.18] mobile-sales-card">
                     <div className="text-xs text-[#9A9A9A]">Vendas hoje</div>
                     <div className="mt-1 text-3xl font-bold">R$ 12.450</div>
                     <div className="mt-1 text-xs text-[#9A9A9A]">+23.5%</div>
                   </div>
                 </div>
-                <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full h-auto rounded-xl shadow-none md:scale-[1.2] transform-gpu origin-center" loading="lazy" referrerPolicy="no-referrer" />
+                <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full h-auto rounded-xl shadow-none md:scale-[1.2] transform-gpu origin-center mobile-hero-img" loading="lazy" referrerPolicy="no-referrer" />
                 <div className="mt-6 flex md:hidden flex-col gap-4 items-stretch">
                   <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90 px-6 py-6 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99] transition" onClick={() => navigate("/auth?signup=1")}>
                     Começar gratuitamente
