@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, Key } from "lucide-react";
 
@@ -167,14 +168,30 @@ const Settings = () => {
                 >
                   painel do Mercado Pago
                 </a>
-              </p>
-            </div>
+          </p>
+        </div>
 
-            {hasConfig && (
-              <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-                <p className="text-sm text-success">
-                  ✓ Mercado Pago configurado com sucesso
-                </p>
+        <div className="space-y-2">
+          <h3 className="font-semibold">Tutorial: Como configurar seu token do Mercado Pago</h3>
+          <p className="text-sm text-muted-foreground">Assista ao passo a passo para conectar sua conta e inserir o Access Token corretamente.</p>
+          <AspectRatio ratio={16 / 9}>
+            <iframe
+              title="Tutorial: Como configurar seu token do Mercado Pago"
+              src="https://player.vimeo.com/video/1141671089?autoplay=0&muted=0&playsinline=1"
+              className="w-full h-full rounded-lg"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer"
+            ></iframe>
+          </AspectRatio>
+        </div>
+
+        {hasConfig && (
+          <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+            <p className="text-sm text-success">
+              ✓ Mercado Pago configurado com sucesso
+            </p>
               </div>
             )}
 
