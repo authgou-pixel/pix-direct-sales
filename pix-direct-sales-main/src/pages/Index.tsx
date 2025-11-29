@@ -10,15 +10,21 @@ const Index = () => {
     <div className="min-h-screen bg-[#1A1A1A] text-white overflow-x-hidden">
       <header className="w-full sticky top-0 z-40 bg-transparent">
         <div className="mx-auto max-w-6xl px-4 py-3">
-          <nav className="flex items-center justify-between">
+          <nav className="flex items-center justify-between rounded-full bg-[#1F1F1F] border border-white/10 shadow-[0_2px_0_rgba(0,0,0,0.6)] px-3 py-2">
             <div className="px-4 py-2">
               <span className="text-white text-xl font-semibold tracking-wide">GouPay</span>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <span className="px-3 py-2 rounded-full bg-[#2A2A2A] text-[#D9D9D9] text-sm">Início</span>
+              <span className="px-3 py-2 rounded-full bg-[#2A2A2A] text-[#D9D9D9] text-sm">Newsletter</span>
+              <span className="px-3 py-2 rounded-full bg-[#2A2A2A] text-[#D9D9D9] text-sm">Suporte</span>
+              <span className="px-3 py-2 rounded-full bg-[#2A2A2A] text-[#D9D9D9] text-sm">Sobre nós</span>
             </div>
             <div className="flex items-center gap-2 px-2">
               <button onClick={() => navigate("/auth")} className="px-4 py-2 rounded-full text-[#CFCFCF] hover:text-white transition">
                 Login
               </button>
-              <Button className="btn-register font-semibold" onClick={() => navigate("/auth?signup=1")}> 
+              <Button className="btn-register font-semibold rounded-full" onClick={() => navigate("/auth?signup=1")}> 
                 Cadastre-se
               </Button>
             </div>
