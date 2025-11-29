@@ -28,24 +28,52 @@ const Index = () => {
       </header>
 
       <main>
-        <section className="relative overflow-hidden pt-24 md:pt-28 pb-12 md:pb-16">
-          <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-[#8A2BE2]/20 blur-[100px] z-0"></div>
-          <div className="absolute -bottom-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#5E2DBE]/20 blur-[100px] z-0"></div>
+        <section className="relative overflow-hidden pt-20 md:pt-24 pb-16 checkerboard-hero">
+          <div className="absolute -top-40 -left-40 w-[520px] h-[520px] rounded-full bg-[#8A2BE2]/25 blur-[110px] z-0"></div>
+          <div className="absolute -bottom-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#5E2DBE]/25 blur-[110px] z-0"></div>
           <div className="absolute inset-0 glass-hero z-10"></div>
-          <div className="mx-auto max-w-6xl px-4 text-center relative z-20">
-            <img
-              src="https://i.imgur.com/ycRB6A5.png"
-              alt="Logo"
-              className="mx-auto mb-6 h-16 md:h-24 w-auto object-contain select-none"
-              loading="lazy"
-              referrerPolicy="no-referrer"
-            />
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-[1.15] md:leading-[1.15]">
-              <span className="block bg-gradient-to-r from-white to-[#C6A3FF] bg-clip-text text-transparent pb-1">Venda mais. Receba direto. Sem taxas.</span>
-            </h1>
-            <p className="text-lg md:text-xl text-[#CFCFCF] mb-6 max-w-3xl mx-auto">Uma plataforma feita para quem quer alta conversão, aprovação automática e saque imediato direto no banco, sem depender da plataforma.</p>
-            <div className="mt-6 flex justify-center relative z-20">
-              <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full max-w-4xl h-auto rounded-xl" loading="lazy" referrerPolicy="no-referrer" />
+          <div className="absolute inset-0 checkerboard-hero-overlay z-15"></div>
+
+          <div className="mx-auto max-w-6xl px-4 relative z-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+              <div className="order-2 md:order-1">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#232323]/80 border border-[#8A2BE2]/30 text-[#CFCFCF] mb-6">
+                  <div className="h-2 w-2 rounded-full bg-[#8A2BE2]"></div>
+                  <span>Plataforma em crescimento</span>
+                </div>
+                <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+                  <span className="block">Venda mais. Receba direto. Sem taxas.</span>
+                </h1>
+                <p className="text-lg md:text-xl text-[#CFCFCF] mt-6 max-w-xl">
+                  Uma plataforma feita para quem quer alta conversão, aprovação automática e saque imediato direto no banco, sem depender da plataforma.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row gap-4">
+                  <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90 px-6 py-6 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99] transition" onClick={() => navigate("/auth?signup=1")}>
+                    Começar gratuitamente
+                  </Button>
+                  <Button variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10 px-6 py-6 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99] transition" onClick={() => navigate("/auth?demo=1")}>
+                    Agendar demo
+                  </Button>
+                </div>
+                <div className="mt-8 flex items-center gap-6 text-[#AFAFAF]">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-[#8A2BE2]" /> Pagamentos seguros
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RefreshCcw className="h-4 w-4 text-[#8A2BE2]" /> 99.9% uptime
+                  </div>
+                </div>
+              </div>
+              <div className="order-1 md:order-2 relative">
+                <div className="absolute left-8 top-0 md:left-16 md:-top-6 z-20">
+                  <div className="rounded-xl bg-[#232323]/90 border border-white/10 shadow-xl px-4 py-3">
+                    <div className="text-xs text-[#9A9A9A]">Vendas hoje</div>
+                    <div className="mt-1 text-2xl font-bold">R$ 12.450</div>
+                    <div className="mt-1 text-xs text-[#9A9A9A]">+23.5%</div>
+                  </div>
+                </div>
+                <img src="https://i.imgur.com/vtcLGj6.png" alt="Visão geral da plataforma" className="w-full max-w-2xl md:max-w-full h-auto rounded-xl shadow-2xl" loading="lazy" referrerPolicy="no-referrer" />
+              </div>
             </div>
           </div>
         </section>
