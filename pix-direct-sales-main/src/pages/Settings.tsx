@@ -93,7 +93,17 @@ const Settings = () => {
         return;
       }
 
-      const { error } = await supabase.rpc("save_mp_token", { token: accessToken });
+      const { error } = await supabase
+        .from("mercado_pago_config")
+        .upsert(
+          {
+            user_id: session.user.id,
+            access_token: accessToken,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id" }
+        );
 
       if (error) throw error;
 
