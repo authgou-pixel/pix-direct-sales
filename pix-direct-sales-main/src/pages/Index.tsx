@@ -51,9 +51,6 @@ const Index = () => {
                   <Button className="bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90 px-6 py-6 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99] transition" onClick={() => navigate("/auth?signup=1")}>
                     Começar gratuitamente
                   </Button>
-                  <Button variant="outline" className="border-[#8A2BE2]/40 text-white hover:bg-[#8A2BE2]/10 px-6 py-6 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99] transition" onClick={() => navigate("/auth?demo=1")}>
-                    Agendar demo
-                  </Button>
                 </div>
                 <div className="mt-8 flex items-center gap-6 text-[#AFAFAF]">
                   <div className="flex items-center gap-2">
