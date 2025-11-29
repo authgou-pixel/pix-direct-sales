@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Banknote, ArrowRightLeft, Library, Download, QrCode, Shield, User, Palette, CheckCircle, PlayCircle, Users, Ban, RefreshCcw } from "lucide-react";
+import { Upload, Banknote, ArrowRightLeft, Library, Download, QrCode, Shield, User, Palette, CheckCircle, PlayCircle, Users, Ban, RefreshCcw, Lock } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -169,20 +169,67 @@ const Index = () => {
         </section>
 
 
-        <section className="py-20 checkerboard-dark rounded-2xl">
+        <section className="py-20 members-bg rounded-2xl">
           <div className="mx-auto max-w-6xl px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20 items-center">
               <div>
-                <h2 className="text-5xl md:text-6xl font-bold mb-10">Área de Membros</h2>
-                <div className="space-y-5 text-[#CFCFCF] text-xl md:text-2xl">
-                  <div className="flex items-center gap-4"><Library className="h-8 w-8 text-[#8A2BE2]" /> Acesso a produtos adquiridos</div>
-                  <div className="flex items-center gap-4"><QrCode className="h-8 w-8 text-[#8A2BE2]" /> Biblioteca de conteúdos digitais</div>
-                  <div className="flex items-center gap-4"><Download className="h-8 w-8 text-[#8A2BE2]" /> Gerenciamento de downloads</div>
+                <h2 className="text-5xl md:text-6xl font-bold mb-4">
+                  Área de Membros <span className="text-[#D34FE2]">Premium</span>
+                </h2>
+                <p className="text-[#CFCFCF] text-xl md:text-2xl mb-8">
+                  Ofereça aos seus clientes uma experiência de acesso profissional e organizada, similar às principais plataformas de streaming.
+                </p>
+                <div className="space-y-4 text-[#CFCFCF] text-lg">
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Acesso a produtos adquiridos</div>
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Biblioteca de conteúdos digitais</div>
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Gerenciamento de downloads</div>
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Interface intuitiva e moderna</div>
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Acesso liberado automaticamente</div>
+                  <div className="flex items-center gap-4"><div className="w-7 h-7 rounded-full bg-[#8A2BE2]/25 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-[#D34FE2]" /></div> Suporte a múltiplos formatos</div>
                 </div>
-                
+                <Button className="mt-10 bg-gradient-to-r from-[#8A2BE2] to-[#D34FE2] text-black font-semibold hover:opacity-90 px-6 py-6 rounded-full shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A2BE2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1A1A1A] active:scale-[0.99]" onClick={() => navigate("/auth")}> 
+                  Conhecer plataforma
+                </Button>
               </div>
-              <div>
-                <img src="https://i.imgur.com/xgt5BoY.png" alt="Área de Membros" className="w-full max-w-3xl md:max-w-4xl rounded-2xl shadow-2xl" loading="lazy" referrerPolicy="no-referrer" />
+              <div className="relative">
+                <div className="members-card rounded-2xl border border-white/10 shadow-2xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-lg font-semibold">Meus Produtos</span>
+                    <span className="px-3 py-1 rounded-full bg-[#8A2BE2]/25 text-[#D34FE2] text-xs">3 ativos</span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="members-item flex items-center justify-between p-4 rounded-xl border border-white/10 bg-gradient-to-br from-[#181818] to-[#1F1F1F]">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#8A2BE2]/20 flex items-center justify-center"><PlayCircle className="h-6 w-6 text-[#D34FE2]" /></div>
+                        <div>
+                          <div className="font-semibold">Curso Completo 2024</div>
+                          <div className="text-xs text-[#AFAFAF]">2.4 GB</div>
+                        </div>
+                      </div>
+                      <button className="text-[#CFCFCF] font-medium">Acessar</button>
+                    </div>
+                    <div className="members-item flex items-center justify-between p-4 rounded-xl border border-white/10 bg-gradient-to-br from-[#181818] to-[#1F1F1F]">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#8A2BE2]/20 flex items-center justify-center"><Download className="h-6 w-6 text-[#D34FE2]" /></div>
+                        <div>
+                          <div className="font-semibold">E-book Premium</div>
+                          <div className="text-xs text-[#AFAFAF]">45 MB</div>
+                        </div>
+                      </div>
+                      <button className="text-[#CFCFCF] font-medium">Acessar</button>
+                    </div>
+                    <div className="members-item flex items-center justify-between p-4 rounded-xl border border-white/10 bg-gradient-to-br from-[#181818] to-[#1F1F1F]">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-[#8A2BE2]/20 flex items-center justify-center"><Lock className="h-6 w-6 text-[#D34FE2]" /></div>
+                        <div>
+                          <div className="font-semibold">Material Exclusivo</div>
+                          <div className="text-xs text-[#AFAFAF]">890 MB</div>
+                        </div>
+                      </div>
+                      <button className="text-[#CFCFCF] font-medium">Acessar</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
