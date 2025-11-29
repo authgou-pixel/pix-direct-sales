@@ -7,8 +7,8 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#1A1A1A] text-white overflow-x-hidden">
-      <header className="w-full sticky top-0 z-40 site-header">
+    <div className="min-h-screen text-white overflow-x-hidden site-primary-bg">
+      <header className="w-full sticky top-0 z-40">
         <div className="mx-auto max-w-6xl px-4 py-3">
           <nav className="flex items-center justify-between header-glass px-3 py-2">
             <div className="px-4 py-2">
