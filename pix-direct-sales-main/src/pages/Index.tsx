@@ -35,7 +35,7 @@ const Index = () => {
 
           <div className="mx-auto max-w-6xl px-4 relative z-20">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
-              <div className="order-1 md:order-1">
+              <div className="order-1 md:order-1 flex md:block min-h-[60vh] items-center justify-center text-center md:text-left md:items-start md:justify-start">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#232323]/80 border border-[#8A2BE2]/30 text-[#CFCFCF] mb-6">
                   <div className="h-2 w-2 rounded-full bg-[#8A2BE2]"></div>
                   <span>Plataforma em crescimento</span>
@@ -59,9 +59,16 @@ const Index = () => {
                     <RefreshCcw className="h-4 w-4 text-[#8A2BE2]" /> 99.9% uptime
                   </div>
                 </div>
+                <div className="mt-8 flex md:hidden items-center justify-center">
+                  <div className="rounded-xl bg-[#232323]/90 border border-white/10 shadow-xl px-5 py-4 scale-[0.7]">
+                    <div className="text-xs text-[#9A9A9A]">Vendas hoje</div>
+                    <div className="mt-1 text-3xl font-bold">R$ 12.450</div>
+                    <div className="mt-1 text-xs text-[#9A9A9A]">+23.5%</div>
+                  </div>
+                </div>
               </div>
               <div className="order-2 md:order-2 relative">
-                <div className="absolute left-8 top-0 md:left-16 md:-top-6 z-20 sales-bounce">
+                <div className="hidden md:block absolute left-8 top-0 md:left-16 md:-top-6 z-20 sales-bounce">
                   <div className="rounded-xl bg-[#232323]/90 border border-white/10 shadow-xl px-5 py-4 md:scale-[1.18]">
                     <div className="text-xs text-[#9A9A9A]">Vendas hoje</div>
                     <div className="mt-1 text-3xl font-bold">R$ 12.450</div>
