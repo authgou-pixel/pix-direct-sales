@@ -13,7 +13,9 @@ import { toast } from "sonner";
 import { Check, Clock, Menu, ChevronLeft, CalendarRange, CheckCircle2, FileJson, FileText } from "lucide-react";
 
 export async function setSaleStatus(client: any, saleId: string, toStatus: string, userId: string) {
-  const status = (toStatus || "").toUpperCase();
+  const allowed = ["approved", "pending"] as const;
+  const status = (toStatus || "").toLowerCase();
+  if (!allowed.includes(status as any)) throw new Error("Status inválido");
   const q1 = client.from("sales").update({ payment_status: status }).eq("id", saleId).eq("seller_id", userId);
   const { error } = await q1;
   if (error) throw error;
@@ -164,7 +166,8 @@ const Sales = () => {
       const status = await setSaleStatus(supabase, sale.id, toStatus, uid);
       setSales((prev) => prev.map((s) => s.id === sale.id ? { ...s, payment_status: status } : s));
       pushHistory(sale.id, fromStatus, toStatus);
-      toast.success("Status atualizado para " + status);
+      const label = status === "approved" ? "APROVADO" : status === "pending" ? "PENDENTE" : status.toUpperCase();
+      toast.success("Status atualizado para " + label);
     } catch (e) {
       const err = e as { message?: string; code?: string; details?: string; hint?: string };
       const parts = [err.message, err.code, err.details, err.hint].filter(Boolean);

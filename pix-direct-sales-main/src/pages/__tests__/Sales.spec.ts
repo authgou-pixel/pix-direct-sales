@@ -19,8 +19,8 @@ describe("setSaleStatus", () => {
     } as any;
 
     const status = await setSaleStatus(mock, "sale-1", "approved", "user-1");
-    expect(status).toBe("APPROVED");
-    expect(calls[0].update).toEqual({ payment_status: "APPROVED" });
+    expect(status).toBe("approved");
+    expect(calls[0].update).toEqual({ payment_status: "approved" });
     expect(calls[0].where).toEqual({ id: "sale-1", seller_id: "user-1" });
   });
 
